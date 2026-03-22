@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { hasSeenDisclaimer } from './db'
 import DisclaimerModal from './components/DisclaimerModal'
 import BottomNav from './components/BottomNav'
@@ -9,6 +9,17 @@ import Today from './pages/Today'
 import LogMed from './pages/LogMed'
 import History from './pages/History'
 import Summary from './pages/Summary'
+
+function isInstalledPWA() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  )
+}
+
+function RootRoute() {
+  return isInstalledPWA() ? <Navigate to="/today" replace /> : <Landing />
+}
 
 function AppShell() {
   const [showDisclaimer, setShowDisclaimer] = useState(false)
@@ -40,7 +51,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<RootRoute />} />
         <Route path="/*" element={<AppShell />} />
       </Routes>
     </BrowserRouter>
