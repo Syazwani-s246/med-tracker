@@ -87,9 +87,9 @@ export function resetDefault(name) {
 }
 
 // Add a new custom medication
-export function addCustomMedication(name, interval, ingredients) {
+export function addCustomMedication(name, interval, ingredients, prescribed = false) {
   const stored = getStoredMeds()
-  stored[name] = { interval, ingredients: ingredients || [] }
+  stored[name] = { interval, ingredients: ingredients || [], prescribed }
   saveStoredMeds(stored)
 }
 

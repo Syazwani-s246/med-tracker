@@ -62,6 +62,7 @@ export default function Settings() {
   const [newIngredients, setNewIngredients] = useState([])
   const [newIngredientInput, setNewIngredientInput] = useState('')
   const [addError, setAddError] = useState('')
+  const [newPrescribed, setNewPrescribed] = useState(false)
   const [hiddenMeds, setHiddenMeds] = useState([])
 
   // Course state
@@ -242,12 +243,13 @@ export default function Settings() {
     const finalIngredients = newIngredientInput.trim()
       ? [...newIngredients, newIngredientInput.trim().toLowerCase()]
       : newIngredients
-    addCustomMedication(trimmedName, interval, finalIngredients)
+    addCustomMedication(trimmedName, interval, finalIngredients, newPrescribed)
     setNewName('')
     setNewInterval('')
     setNewIngredients([])
     setNewIngredientInput('')
     setAddError('')
+    setNewPrescribed(false)
     setShowAdd(false)
     reload()
   }
@@ -376,11 +378,22 @@ export default function Settings() {
               </div>
               <p className={styles.fieldHint}>Check your medication label or packaging for active ingredients</p>
             </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Daily / Prescribed</label>
+              <button
+                type="button"
+                className={`${styles.togglePill} ${newPrescribed ? styles.togglePillOn : ''}`}
+                onClick={() => setNewPrescribed((v) => !v)}
+              >
+                {newPrescribed ? 'Yes' : 'No'}
+              </button>
+              <p className={styles.fieldHint}>Turn this on if your doctor has assigned this as a regular medication</p>
+            </div>
             <div className={styles.formActions}>
               <button
                 type="button"
                 className={styles.cancelBtn}
-                onClick={() => { setShowAdd(false); setNewName(''); setNewInterval(''); setNewIngredients([]); setNewIngredientInput(''); setAddError('') }}
+                onClick={() => { setShowAdd(false); setNewName(''); setNewInterval(''); setNewIngredients([]); setNewIngredientInput(''); setAddError(''); setNewPrescribed(false) }}
               >
                 Cancel
               </button>
