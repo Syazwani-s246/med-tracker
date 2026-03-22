@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { RiHome5Line, RiAddCircleLine, RiCalendarLine, RiBarChartLine } from 'react-icons/ri'
+import { RiHome5Line, RiAddCircleLine, RiCalendarLine, RiBarChartLine, RiSettings3Line } from 'react-icons/ri'
 import styles from './BottomNav.module.css'
 
 const tabs = [
@@ -7,6 +7,7 @@ const tabs = [
   { to: '/log', icon: RiAddCircleLine, label: 'Log' },
   { to: '/history', icon: RiCalendarLine, label: 'History' },
   { to: '/summary', icon: RiBarChartLine, label: 'Summary' },
+  { to: '/settings', icon: RiSettings3Line, label: 'Settings' },
 ]
 
 export default function BottomNav() {

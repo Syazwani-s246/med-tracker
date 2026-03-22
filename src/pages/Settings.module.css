@@ -1,0 +1,293 @@
+.page {
+  padding: 24px 20px calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.header {
+  margin-bottom: 0;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ede9fe;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b6480;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0 0 2px;
+}
+
+/* Medication list */
+.list {
+  display: flex;
+  flex-direction: column;
+  background: #1e1a2e;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.medRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.medRow:last-child {
+  border-bottom: none;
+}
+
+.medRow:active {
+  background: rgba(192, 132, 252, 0.06);
+}
+
+.medName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.medInterval {
+  font-size: 13px;
+  color: #6b6480;
+  font-family: 'Nunito', sans-serif;
+}
+
+.emptyNote {
+  font-size: 13px;
+  color: #4a3f6b;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 4px 0;
+}
+
+/* Add button */
+.addBtn {
+  align-self: flex-start;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px dashed rgba(192, 132, 252, 0.35);
+  background: transparent;
+  color: #c084fc;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.addBtn:active {
+  background: rgba(192, 132, 252, 0.08);
+}
+
+/* Add form */
+.addForm {
+  background: #1e1a2e;
+  border-radius: 16px;
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.addFormTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+}
+
+/* Fields */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9b8fc0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.optional {
+  font-weight: 500;
+  color: #5c5079;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #261f3b;
+  color: #ede9fe;
+  font-size: 15px;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: rgba(192, 132, 252, 0.4);
+}
+
+.input::placeholder {
+  color: #4a3f6b;
+}
+
+.error {
+  font-size: 12px;
+  color: #f87171;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+}
+
+/* Form actions */
+.formActions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Bottom sheet overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px;
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+
+.sheet {
+  background: #1e1a2e;
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideUp 0.22s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0 }
+  to { transform: translateY(0); opacity: 1 }
+}
+
+.sheetTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+}
+
+.resetBtn {
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.06);
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.resetBtn:active {
+  background: rgba(251, 191, 36, 0.12);
+}
+
+/* Sheet actions */
+.sheetActions {
+  display: flex;
+  gap: 10px;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  background: transparent;
+  color: #c084fc;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.saveBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #c084fc);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.deleteBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}

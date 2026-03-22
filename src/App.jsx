@@ -9,6 +9,7 @@ import Today from './pages/Today'
 import LogMed from './pages/LogMed'
 import History from './pages/History'
 import Summary from './pages/Summary'
+import Settings from './pages/Settings'
 
 function isInstalledPWA() {
   return (
@@ -37,6 +38,7 @@ function AppShell() {
         <Route path="/log" element={<LogMed />} />
         <Route path="/history" element={<History />} />
         <Route path="/summary" element={<Summary />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
       <BottomNav />
       <InstallPrompt />

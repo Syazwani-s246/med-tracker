@@ -11,7 +11,8 @@
       "Bash(convert --version)",
       "Bash(npm run:*)",
       "Bash(git add:*)",
-      "Bash(npx pwa-assets-generator:*)"
+      "Bash(npx pwa-assets-generator:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
