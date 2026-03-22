@@ -16,7 +16,7 @@ function saveStoredMeds(meds) {
 }
 
 // Returns merged list: defaults (with any overrides) + custom additions
-// Each item: { name, interval, isDefault }
+// Each item: { name, ingredients, interval, isDefault }
 export function getMergedMedications() {
   const stored = getStoredMeds()
   const result = MEDICATIONS.map((m) => ({ ...m, isDefault: true }))
@@ -26,9 +26,13 @@ export function getMergedMedications() {
       (m) => m.name.toLowerCase() === name.toLowerCase()
     )
     if (idx !== -1) {
-      result[idx] = { ...result[idx], interval: data.interval }
+      result[idx] = {
+        ...result[idx],
+        interval: data.interval,
+        ...(data.ingredients !== undefined ? { ingredients: data.ingredients } : {}),
+      }
     } else {
-      result.push({ name, interval: data.interval, isDefault: false })
+      result.push({ name, ingredients: data.ingredients || [], interval: data.interval, isDefault: false })
     }
   }
 
@@ -50,10 +54,23 @@ export function getSafetyInterval(name) {
   return match ? match.interval : 0
 }
 
-// Save an interval override for a default medication
-export function saveOverride(name, interval) {
+export function getIngredients(name) {
+  if (!name) return []
+  const match = getMergedMedications().find(
+    (m) => m.name.toLowerCase() === name.toLowerCase()
+  )
+  return match?.ingredients || []
+}
+
+// Save an interval/ingredients override for a default medication
+export function saveOverride(name, interval, ingredients) {
   const stored = getStoredMeds()
-  stored[name] = { interval }
+  const existing = stored[name] || {}
+  stored[name] = {
+    ...existing,
+    interval,
+    ...(ingredients !== undefined ? { ingredients } : {}),
+  }
   saveStoredMeds(stored)
 }
 
@@ -65,17 +82,17 @@ export function resetDefault(name) {
 }
 
 // Add a new custom medication
-export function addCustomMedication(name, interval) {
+export function addCustomMedication(name, interval, ingredients) {
   const stored = getStoredMeds()
-  stored[name] = { interval }
+  stored[name] = { interval, ingredients: ingredients || [] }
   saveStoredMeds(stored)
 }
 
 // Rename or update a custom medication
-export function updateCustomMedication(oldName, newName, interval) {
+export function updateCustomMedication(oldName, newName, interval, ingredients) {
   const stored = getStoredMeds()
   delete stored[oldName]
-  stored[newName] = { interval }
+  stored[newName] = { interval, ingredients: ingredients || [] }
   saveStoredMeds(stored)
 }
 

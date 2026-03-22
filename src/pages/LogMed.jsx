@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { addLog, getLogs } from '../db'
 import { REASON_PRESETS } from '../medications'
-import { searchMedications, getSafetyInterval } from '../medicationStore'
+import { searchMedications, getSafetyInterval, getIngredients } from '../medicationStore'
 import SafetyModal from '../components/SafetyModal'
+import IngredientModal from '../components/IngredientModal'
 import Toast from '../components/Toast'
 import styles from './LogMed.module.css'
 
@@ -31,6 +32,7 @@ export default function LogMed() {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [safetyData, setSafetyData] = useState(null)
   const [pendingSave, setPendingSave] = useState(false)
+  const [ingredientData, setIngredientData] = useState(null)
   const [toast, setToast] = useState(null)
   const nameRef = useRef(null)
 
@@ -64,6 +66,46 @@ export default function LogMed() {
     return true
   }
 
+  function checkIngredients() {
+    const myIngredients = getIngredients(name.trim())
+    if (!myIngredients.length) return []
+
+    const now = new Date(timestamp)
+    const cutoff = new Date(now)
+    cutoff.setHours(cutoff.getHours() - 8)
+
+    const recentLogs = getLogs().filter(
+      (l) =>
+        l.type !== 'note' &&
+        l.name.toLowerCase() !== name.trim().toLowerCase() &&
+        new Date(l.timestamp) >= cutoff &&
+        new Date(l.timestamp) <= now
+    )
+
+    const overlaps = []
+    for (const log of recentLogs) {
+      const theirIngredients = getIngredients(log.name)
+      const shared = myIngredients.filter((i) => theirIngredients.includes(i))
+      if (shared.length > 0 && !overlaps.find((o) => o.medName.toLowerCase() === log.name.toLowerCase())) {
+        overlaps.push({
+          medName: log.name,
+          sharedIngredients: shared,
+          hoursSince: (now - new Date(log.timestamp)) / 3600000,
+        })
+      }
+    }
+    return overlaps
+  }
+
+  function runIngredientCheck() {
+    const overlaps = checkIngredients()
+    if (overlaps.length > 0) {
+      setIngredientData(overlaps)
+    } else {
+      doSave()
+    }
+  }
+
   function doSave() {
     const finalReason = reason === 'other' ? customReason : reason
     addLog({
@@ -84,19 +126,28 @@ export default function LogMed() {
     if (!safe) {
       setPendingSave(true)
     } else {
-      doSave()
+      runIngredientCheck()
     }
   }
 
   function handleSafetyContinue() {
     setSafetyData(null)
     setPendingSave(false)
-    doSave()
+    runIngredientCheck()
   }
 
   function handleSafetyWait() {
     setSafetyData(null)
     setPendingSave(false)
+  }
+
+  function handleIngredientContinue() {
+    setIngredientData(null)
+    doSave()
+  }
+
+  function handleIngredientWait() {
+    setIngredientData(null)
   }
 
   function selectSuggestion(val) {
@@ -223,6 +274,15 @@ export default function LogMed() {
           safeInterval={safetyData.safeInterval}
           onContinue={handleSafetyContinue}
           onWait={handleSafetyWait}
+        />
+      )}
+
+      {ingredientData && (
+        <IngredientModal
+          newMed={name}
+          overlaps={ingredientData}
+          onContinue={handleIngredientContinue}
+          onWait={handleIngredientWait}
         />
       )}
 

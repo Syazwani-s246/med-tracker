@@ -291,3 +291,78 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
+
+/* Ingredient tag input */
+.tagInput {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #261f3b;
+  min-height: 44px;
+  align-items: center;
+  cursor: text;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.tagInput:focus-within {
+  border-color: rgba(192, 132, 252, 0.4);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(192, 132, 252, 0.15);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  color: #c084fc;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.tagRemove {
+  background: none;
+  border: none;
+  color: #c084fc;
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+}
+
+.tagRemove:hover {
+  opacity: 1;
+}
+
+.tagTextInput {
+  flex: 1;
+  min-width: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ede9fe;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  padding: 2px 0;
+}
+
+.tagTextInput::placeholder {
+  color: #4a3f6b;
+}
+
+.fieldHint {
+  font-size: 12px;
+  color: #5c5079;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  line-height: 1.4;
+}

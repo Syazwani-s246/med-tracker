@@ -22,12 +22,16 @@ function getDefaultInterval(name) {
 
 export default function Settings() {
   const [meds, setMeds] = useState([])
-  const [editing, setEditing] = useState(null) // { name, interval, isDefault }
+  const [editing, setEditing] = useState(null) // { name, interval, ingredients, isDefault }
   const [editInterval, setEditInterval] = useState('')
   const [editName, setEditName] = useState('')
+  const [editIngredients, setEditIngredients] = useState([])
+  const [editIngredientInput, setEditIngredientInput] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
   const [newInterval, setNewInterval] = useState('')
+  const [newIngredients, setNewIngredients] = useState([])
+  const [newIngredientInput, setNewIngredientInput] = useState('')
   const [addError, setAddError] = useState('')
 
   function reload() {
@@ -45,22 +49,50 @@ export default function Settings() {
     setEditing(med)
     setEditInterval(med.interval ? String(med.interval) : '')
     setEditName(med.name)
+    setEditIngredients(med.ingredients || [])
+    setEditIngredientInput('')
   }
 
   function closeEdit() {
     setEditing(null)
     setEditInterval('')
     setEditName('')
+    setEditIngredients([])
+    setEditIngredientInput('')
+  }
+
+  function addTag(tag, list, setList, setInput) {
+    const trimmed = tag.trim().toLowerCase()
+    if (trimmed && !list.includes(trimmed)) {
+      setList([...list, trimmed])
+    }
+    setInput('')
+  }
+
+  function handleTagKeyDown(e, list, setList, setInput) {
+    if (e.key === ' ' || e.key === ',' || e.key === 'Enter') {
+      e.preventDefault()
+      addTag(e.target.value, list, setList, setInput)
+    } else if (e.key === 'Backspace' && !e.target.value && list.length > 0) {
+      setList(list.slice(0, -1))
+    }
+  }
+
+  function removeTag(tag, list, setList) {
+    setList(list.filter((t) => t !== tag))
   }
 
   function handleSaveEdit() {
     const interval = parseFloat(editInterval) || 0
+    const finalIngredients = editIngredientInput.trim()
+      ? [...editIngredients, editIngredientInput.trim().toLowerCase()]
+      : editIngredients
     if (editing.isDefault) {
-      saveOverride(editing.name, interval)
+      saveOverride(editing.name, interval, finalIngredients)
     } else {
       const trimmedName = editName.trim()
       if (!trimmedName) return
-      updateCustomMedication(editing.name, trimmedName, interval)
+      updateCustomMedication(editing.name, trimmedName, interval, finalIngredients)
     }
     closeEdit()
     reload()
@@ -92,9 +124,14 @@ export default function Settings() {
     }
 
     const interval = parseFloat(newInterval) || 0
-    addCustomMedication(trimmedName, interval)
+    const finalIngredients = newIngredientInput.trim()
+      ? [...newIngredients, newIngredientInput.trim().toLowerCase()]
+      : newIngredients
+    addCustomMedication(trimmedName, interval, finalIngredients)
     setNewName('')
     setNewInterval('')
+    setNewIngredients([])
+    setNewIngredientInput('')
     setAddError('')
     setShowAdd(false)
     reload()
@@ -178,11 +215,38 @@ export default function Settings() {
                 placeholder="e.g. 4"
               />
             </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>
+                Active ingredients <span className={styles.optional}>(optional)</span>
+              </label>
+              <div className={styles.tagInput}>
+                {newIngredients.map((tag) => (
+                  <span key={tag} className={styles.tag}>
+                    {tag}
+                    <button
+                      type="button"
+                      className={styles.tagRemove}
+                      onClick={() => removeTag(tag, newIngredients, setNewIngredients)}
+                    >✕</button>
+                  </span>
+                ))}
+                <input
+                  className={styles.tagTextInput}
+                  type="text"
+                  value={newIngredientInput}
+                  onChange={(e) => setNewIngredientInput(e.target.value)}
+                  onKeyDown={(e) => handleTagKeyDown(e, newIngredients, setNewIngredients, setNewIngredientInput)}
+                  onBlur={() => addTag(newIngredientInput, newIngredients, setNewIngredients, setNewIngredientInput)}
+                  placeholder={newIngredients.length === 0 ? 'e.g. paracetamol, ibuprofen' : ''}
+                />
+              </div>
+              <p className={styles.fieldHint}>Check your medication label or packaging for active ingredients</p>
+            </div>
             <div className={styles.formActions}>
               <button
                 type="button"
                 className={styles.cancelBtn}
-                onClick={() => { setShowAdd(false); setNewName(''); setNewInterval(''); setAddError('') }}
+                onClick={() => { setShowAdd(false); setNewName(''); setNewInterval(''); setNewIngredients([]); setNewIngredientInput(''); setAddError('') }}
               >
                 Cancel
               </button>
@@ -229,6 +293,34 @@ export default function Settings() {
                 onChange={(e) => setEditInterval(e.target.value)}
                 placeholder="0 = no warning"
               />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>
+                Active ingredients <span className={styles.optional}>(optional)</span>
+              </label>
+              <div className={styles.tagInput}>
+                {editIngredients.map((tag) => (
+                  <span key={tag} className={styles.tag}>
+                    {tag}
+                    <button
+                      type="button"
+                      className={styles.tagRemove}
+                      onClick={() => removeTag(tag, editIngredients, setEditIngredients)}
+                    >✕</button>
+                  </span>
+                ))}
+                <input
+                  className={styles.tagTextInput}
+                  type="text"
+                  value={editIngredientInput}
+                  onChange={(e) => setEditIngredientInput(e.target.value)}
+                  onKeyDown={(e) => handleTagKeyDown(e, editIngredients, setEditIngredients, setEditIngredientInput)}
+                  onBlur={() => addTag(editIngredientInput, editIngredients, setEditIngredients, setEditIngredientInput)}
+                  placeholder={editIngredients.length === 0 ? 'e.g. paracetamol, ibuprofen' : ''}
+                />
+              </div>
+              <p className={styles.fieldHint}>Check your medication label or packaging for active ingredients</p>
             </div>
 
             {editing.isDefault && isOverridden && (
