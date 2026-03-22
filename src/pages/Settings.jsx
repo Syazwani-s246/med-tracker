@@ -9,8 +9,35 @@ import {
   deleteCustomMedication,
   deleteDefaultMedication,
   getHiddenDefaults,
+  getCourses,
+  addCourse,
+  updateCourse,
+  deleteCourse,
+  getPrescribed,
+  setPrescribed,
 } from '../medicationStore'
 import styles from './Settings.module.css'
+
+function formatCourseDate(dateStr) {
+  if (!dateStr) return 'Ongoing'
+  const d = new Date(dateStr + 'T00:00:00')
+  return d.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function coursesOverlap(courses, startDate, endDate, excludeId = null) {
+  const sDate = new Date(startDate)
+  const eDate = endDate ? new Date(endDate) : null
+  for (const c of courses) {
+    if (c.id === excludeId) continue
+    const cStart = new Date(c.startDate)
+    const cEnd = c.endDate ? new Date(c.endDate) : null
+    // check overlap: two ranges overlap if one starts before the other ends
+    const aEnd = eDate || new Date('9999-12-31')
+    const bEnd = cEnd || new Date('9999-12-31')
+    if (sDate <= bEnd && aEnd >= cStart) return true
+  }
+  return false
+}
 
 function formatInterval(interval) {
   if (!interval) return 'No interval set'
@@ -37,6 +64,17 @@ export default function Settings() {
   const [addError, setAddError] = useState('')
   const [hiddenMeds, setHiddenMeds] = useState([])
 
+  // Course state
+  const [courses, setCourses] = useState([])
+  const [courseForm, setCourseForm] = useState(null) // null | { mode: 'add' } | { mode: 'edit', id }
+  const [courseFormDose, setCourseFormDose] = useState('')
+  const [courseFormStart, setCourseFormStart] = useState('')
+  const [courseFormEnd, setCourseFormEnd] = useState('')
+  const [courseFormNotes, setCourseFormNotes] = useState('')
+  const [courseFormError, setCourseFormError] = useState('')
+  const [courseDeleteConfirm, setCourseDeleteConfirm] = useState(null) // courseId
+  const [editPrescribed, setEditPrescribed] = useState(false)
+
   function reload() {
     setMeds(getMergedMedications())
     setHiddenMeds(getHiddenDefaults())
@@ -55,6 +93,11 @@ export default function Settings() {
     setEditName(med.name)
     setEditIngredients(med.ingredients || [])
     setEditIngredientInput('')
+    setCourses(getCourses(med.name))
+    setCourseForm(null)
+    setCourseFormError('')
+    setCourseDeleteConfirm(null)
+    setEditPrescribed(getPrescribed(med.name))
   }
 
   function closeEdit() {
@@ -63,6 +106,69 @@ export default function Settings() {
     setEditName('')
     setEditIngredients([])
     setEditIngredientInput('')
+    setCourses([])
+    setCourseForm(null)
+    setCourseFormError('')
+    setCourseDeleteConfirm(null)
+  }
+
+  function openCourseAdd() {
+    setCourseForm({ mode: 'add' })
+    setCourseFormDose('')
+    setCourseFormStart('')
+    setCourseFormEnd('')
+    setCourseFormNotes('')
+    setCourseFormError('')
+  }
+
+  function openCourseEdit(course) {
+    setCourseForm({ mode: 'edit', id: course.id })
+    setCourseFormDose(course.dose)
+    setCourseFormStart(course.startDate)
+    setCourseFormEnd(course.endDate || '')
+    setCourseFormNotes(course.notes || '')
+    setCourseFormError('')
+  }
+
+  function cancelCourseForm() {
+    setCourseForm(null)
+    setCourseFormError('')
+  }
+
+  function saveCourseForm() {
+    if (!courseFormStart) {
+      setCourseFormError('Start date is required.')
+      return
+    }
+    if (courseFormEnd && courseFormEnd <= courseFormStart) {
+      setCourseFormError('End date must be after start date.')
+      return
+    }
+    const excludeId = courseForm.mode === 'edit' ? courseForm.id : null
+    if (coursesOverlap(courses, courseFormStart, courseFormEnd || null, excludeId)) {
+      setCourseFormError('This overlaps with another course. Please check the dates.')
+      return
+    }
+    const payload = {
+      dose: courseFormDose.trim(),
+      startDate: courseFormStart,
+      endDate: courseFormEnd || null,
+      notes: courseFormNotes.trim(),
+    }
+    if (courseForm.mode === 'add') {
+      addCourse(editing.name, payload)
+    } else {
+      updateCourse(editing.name, courseForm.id, payload)
+    }
+    setCourses(getCourses(editing.name))
+    setCourseForm(null)
+    setCourseFormError('')
+  }
+
+  function confirmDeleteCourse() {
+    deleteCourse(editing.name, courseDeleteConfirm)
+    setCourses(getCourses(editing.name))
+    setCourseDeleteConfirm(null)
   }
 
   function addTag(tag, list, setList, setInput) {
@@ -98,6 +204,7 @@ export default function Settings() {
       if (!trimmedName) return
       updateCustomMedication(editing.name, trimmedName, interval, finalIngredients)
     }
+    setPrescribed(editing.name, editPrescribed)
     closeEdit()
     reload()
   }
@@ -348,6 +455,118 @@ export default function Settings() {
                 />
               </div>
               <p className={styles.fieldHint}>Check your medication label or packaging for active ingredients</p>
+            </div>
+
+            {/* Prescribed toggle */}
+            <div className={styles.field}>
+              <label className={styles.fieldLabel}>Prescribed</label>
+              <button
+                type="button"
+                className={`${styles.togglePill} ${editPrescribed ? styles.togglePillOn : ''}`}
+                onClick={() => setEditPrescribed((v) => !v)}
+              >
+                {editPrescribed ? 'Yes' : 'No'}
+              </button>
+            </div>
+
+            {/* Courses section */}
+            <div className={styles.coursesSection}>
+              <p className={styles.coursesSectionLabel}>Courses</p>
+
+              {courses.length > 0 && (
+                <div className={styles.courseList}>
+                  {courses.map((c) => (
+                    <div key={c.id} className={styles.courseRow}>
+                      <div className={styles.courseInfo}>
+                        <span className={styles.courseDose}>{c.dose || 'No dose set'}</span>
+                        <span className={styles.courseDates}>
+                          {formatCourseDate(c.startDate)} – {c.endDate ? formatCourseDate(c.endDate) : 'Ongoing'}
+                        </span>
+                        {c.notes ? <span className={styles.courseNotes}>{c.notes}</span> : null}
+                      </div>
+                      <div className={styles.courseActions}>
+                        <button
+                          type="button"
+                          className={styles.courseIconBtn}
+                          onClick={() => openCourseEdit(c)}
+                          aria-label="Edit course"
+                        >✏️</button>
+                        <button
+                          type="button"
+                          className={styles.courseIconBtn}
+                          onClick={() => setCourseDeleteConfirm(c.id)}
+                          aria-label="Delete course"
+                        >🗑️</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {courseDeleteConfirm && (
+                <div className={styles.courseConfirm}>
+                  <p className={styles.courseConfirmMsg}>Remove this course?</p>
+                  <div className={styles.courseConfirmActions}>
+                    <button type="button" className={styles.cancelBtn} onClick={() => setCourseDeleteConfirm(null)}>Cancel</button>
+                    <button type="button" className={`${styles.saveBtn} ${styles.deleteSaveBtn}`} onClick={confirmDeleteCourse}>Remove</button>
+                  </div>
+                </div>
+              )}
+
+              {courseForm ? (
+                <div className={styles.courseFormWrap}>
+                  <p className={styles.courseFormTitle}>{courseForm.mode === 'add' ? 'Add Course' : 'Edit Course'}</p>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Dose <span className={styles.optional}>(optional)</span></label>
+                    <input
+                      className={styles.input}
+                      type="text"
+                      value={courseFormDose}
+                      onChange={(e) => setCourseFormDose(e.target.value)}
+                      placeholder="e.g. 50mg, 1 tablet"
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Start Date</label>
+                    <input
+                      className={styles.input}
+                      type="date"
+                      value={courseFormStart}
+                      onChange={(e) => { setCourseFormStart(e.target.value); setCourseFormError('') }}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>End Date <span className={styles.optional}>(leave blank if still ongoing)</span></label>
+                    <input
+                      className={styles.input}
+                      type="date"
+                      value={courseFormEnd}
+                      onChange={(e) => { setCourseFormEnd(e.target.value); setCourseFormError('') }}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Notes <span className={styles.optional}>(optional)</span></label>
+                    <input
+                      className={styles.input}
+                      type="text"
+                      value={courseFormNotes}
+                      onChange={(e) => setCourseFormNotes(e.target.value)}
+                      placeholder="e.g. prescribed by Dr. Amir"
+                    />
+                  </div>
+                  {courseFormError && <p className={styles.error}>{courseFormError}</p>}
+                  <div className={styles.formActions}>
+                    <button type="button" className={styles.cancelBtn} onClick={cancelCourseForm}>Cancel</button>
+                    <button type="button" className={styles.saveBtn} onClick={saveCourseForm}>Save</button>
+                  </div>
+                </div>
+              ) : (
+                !courseDeleteConfirm && (
+                  <button type="button" className={styles.addCourseBtn} onClick={openCourseAdd}>
+                    + Add Course
+                  </button>
+                )
+              )}
             </div>
 
             {editing.isDefault && isOverridden && (
