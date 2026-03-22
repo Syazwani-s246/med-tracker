@@ -119,3 +119,71 @@ export function getHiddenDefaults() {
   const stored = getStoredMeds()
   return MEDICATIONS.filter((m) => stored[m.name]?.deleted).map((m) => m.name)
 }
+
+// Save prescribed flag for a medication
+export function setPrescribed(name, prescribed) {
+  const stored = getStoredMeds()
+  const existing = stored[name] || {}
+  stored[name] = { ...existing, prescribed }
+  saveStoredMeds(stored)
+}
+
+export function getPrescribed(name) {
+  const stored = getStoredMeds()
+  return stored[name]?.prescribed === true
+}
+
+// --- Course helpers ---
+
+// Get all courses for a med, sorted by startDate asc
+export function getCourses(name) {
+  const stored = getStoredMeds()
+  const med = stored[name]
+  if (!med || !Array.isArray(med.courses)) return []
+  return [...med.courses].sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+}
+
+// Get the currently active course (endDate is null OR endDate >= today)
+export function getActiveCourse(name) {
+  const today = new Date().toISOString().split('T')[0]
+  return getCourses(name).find((c) => !c.endDate || c.endDate >= today) || null
+}
+
+// Check if a specific date falls within any course for this med
+// Returns true/false/null — null means med has no courses at all (count everything)
+export function isWithinAnyCourse(name, date) {
+  const courses = getCourses(name)
+  if (courses.length === 0) return null
+  const d = typeof date === 'string' ? date.slice(0, 10) : new Date(date).toISOString().slice(0, 10)
+  return courses.some((c) => c.startDate <= d && (!c.endDate || c.endDate >= d))
+}
+
+// Add a new course
+export function addCourse(medName, course) {
+  const stored = getStoredMeds()
+  const med = stored[medName] || {}
+  const courses = Array.isArray(med.courses) ? med.courses : []
+  courses.push({ id: crypto.randomUUID(), ...course })
+  stored[medName] = { ...med, courses }
+  saveStoredMeds(stored)
+}
+
+// Update an existing course by id
+export function updateCourse(medName, courseId, updatedCourse) {
+  const stored = getStoredMeds()
+  const med = stored[medName] || {}
+  const courses = (Array.isArray(med.courses) ? med.courses : []).map((c) =>
+    c.id === courseId ? { ...c, ...updatedCourse } : c
+  )
+  stored[medName] = { ...med, courses }
+  saveStoredMeds(stored)
+}
+
+// Delete a course by id
+export function deleteCourse(medName, courseId) {
+  const stored = getStoredMeds()
+  const med = stored[medName] || {}
+  const courses = (Array.isArray(med.courses) ? med.courses : []).filter((c) => c.id !== courseId)
+  stored[medName] = { ...med, courses }
+  saveStoredMeds(stored)
+}
