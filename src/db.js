@@ -1,3 +1,5 @@
+import { getMergedMedications, getCourses, addCourse } from './medicationStore'
+
 const STORAGE_KEY = 'amikubat_logs'
 const DISCLAIMER_KEY = 'amikubat_disclaimer_seen'
 
@@ -98,7 +100,14 @@ export function markDisclaimerSeen() {
 
 export function exportJSON() {
   const logs = getLogs()
-  const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' })
+  const meds = getMergedMedications()
+  const medication_courses = {}
+  for (const med of meds) {
+    const courses = getCourses(med.name)
+    if (courses.length > 0) medication_courses[med.name] = courses
+  }
+  const payload = { logs, medication_courses }
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
   downloadBlob(blob, 'amikubat-export.json')
 }
 
@@ -115,7 +124,20 @@ export function exportCSV() {
     }
     return [date, time, q('med'), q(l.name), q(l.dose), q(l.reason), q(l.effect), q(l.notes), q(''), q('')].join(',')
   })
-  const csv = [header, ...rows].join('\n')
+
+  const meds = getMergedMedications()
+  const courseRows = []
+  for (const med of meds) {
+    const courses = getCourses(med.name)
+    for (const c of courses) {
+      courseRows.push([q(med.name), q(c.dose), q(c.startDate), q(c.endDate || '(ongoing)'), q(c.notes || '')].join(','))
+    }
+  }
+
+  let csv = [header, ...rows].join('\n')
+  if (courseRows.length > 0) {
+    csv += '\n\n--- Medication Courses ---\nMedication,Dose,Start Date,End Date,Notes\n' + courseRows.join('\n')
+  }
   const blob = new Blob([csv], { type: 'text/csv' })
   downloadBlob(blob, 'amikubat-export.csv')
 }
@@ -134,11 +156,22 @@ function downloadBlob(blob, filename) {
 }
 
 export function importJSON(jsonString) {
-  let incoming
+  let parsed
   try {
-    incoming = JSON.parse(jsonString)
-    if (!Array.isArray(incoming)) throw new Error()
+    parsed = JSON.parse(jsonString)
   } catch {
+    throw new Error('Invalid JSON format.')
+  }
+
+  // Support both legacy array format and new { logs, medication_courses } format
+  let incoming, medication_courses
+  if (Array.isArray(parsed)) {
+    incoming = parsed
+    medication_courses = null
+  } else if (parsed && Array.isArray(parsed.logs)) {
+    incoming = parsed.logs
+    medication_courses = parsed.medication_courses || null
+  } else {
     throw new Error('Invalid JSON format.')
   }
 
@@ -158,7 +191,21 @@ export function importJSON(jsonString) {
       added++
     }
   }
-
   saveLogs(merged)
+
+  // Restore courses if present
+  if (medication_courses && typeof medication_courses === 'object') {
+    for (const [medName, courses] of Object.entries(medication_courses)) {
+      if (!Array.isArray(courses)) continue
+      const existing = getCourses(medName)
+      const existingIds = new Set(existing.map((c) => c.id))
+      for (const course of courses) {
+        if (!existingIds.has(course.id)) {
+          addCourse(medName, course)
+        }
+      }
+    }
+  }
+
   return added
 }
