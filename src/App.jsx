@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { hasSeenDisclaimer } from './db'
 import DisclaimerModal from './components/DisclaimerModal'
 import BottomNav from './components/BottomNav'
@@ -22,7 +22,6 @@ function AppShell() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Navigate to="/today" replace />} />
         <Route path="/today" element={<Today />} />
         <Route path="/log" element={<LogMed />} />
         <Route path="/history" element={<History />} />
@@ -41,7 +40,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/landing" element={<Landing />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/*" element={<AppShell />} />
       </Routes>
     </BrowserRouter>
