@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npx create-vite@latest . --template react)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(git init:*)",
+      "Bash(git checkout:*)",
+      "Bash(node -e \":*)",
+      "Bash(convert --version)",
+      "Bash(npm run:*)",
+      "Bash(git add:*)",
+      "Bash(npx pwa-assets-generator:*)"
+    ]
+  }
+}
