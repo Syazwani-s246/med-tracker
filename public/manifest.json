@@ -1,7 +1,10 @@
 {
-  "name": "AmikUbat",
+  "id": "/",
+  "name": "AmikUbat — Medication Tracker",
   "short_name": "AmikUbat",
-  "description": "Track your meds. Take care of yourself.",
+  "description": "A free, private medication tracker. Log your meds, track dosage intervals, get weekly insights, and export your history — no login, no cloud, works offline.",
+  "lang": "en-MY",
+  "categories": ["health", "medical", "utilities"],
   "display": "standalone",
   "start_url": "/",
   "scope": "/",
