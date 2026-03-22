@@ -12,7 +12,8 @@
       "Bash(npm run:*)",
       "Bash(git add:*)",
       "Bash(npx pwa-assets-generator:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
