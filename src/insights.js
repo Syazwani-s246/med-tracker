@@ -90,9 +90,11 @@ export function generateInsights(logs, period = 'week') {
       continue
     }
 
-    // Overuse nudge: non-prescribed med exceeding 5x in 7 days (skip if no active course but courses exist)
-    if (period === 'week' && count > 5 && !prescribed) {
-      if (activeCourse !== null || isWithinAnyCourse(name, new Date().toISOString()) === null) {
+    // Overuse nudge: exceeding 5x in 7 days — show consistency for prescribed, warning for others
+    if (period === 'week' && count > 5) {
+      if (prescribed) {
+        insights.push(`You've been consistent with ${name} this week \uD83D\uDC4D`)
+      } else if (activeCourse !== null || isWithinAnyCourse(name, new Date().toISOString()) === null) {
         overuse.push(
           `You've taken ${name} ${count} times in the last 7 days. If the pain persists, it might be worth speaking to a doctor. \uD83D\uDC9B`
         )

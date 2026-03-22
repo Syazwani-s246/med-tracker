@@ -33,10 +33,11 @@ export function getMergedMedications() {
           ...result[idx],
           interval: data.interval,
           ...(data.ingredients !== undefined ? { ingredients: data.ingredients } : {}),
+          ...(data.prescribed !== undefined ? { prescribed: data.prescribed } : {}),
         }
       }
     } else {
-      result.push({ name, ingredients: data.ingredients || [], interval: data.interval, isDefault: false })
+      result.push({ name, ingredients: data.ingredients || [], interval: data.interval, isDefault: false, ...(data.prescribed !== undefined ? { prescribed: data.prescribed } : {}) })
     }
   }
 
