@@ -96,8 +96,9 @@ export function addCustomMedication(name, interval, ingredients, prescribed = fa
 // Rename or update a custom medication
 export function updateCustomMedication(oldName, newName, interval, ingredients) {
   const stored = getStoredMeds()
+  const existing = stored[oldName] || {}
   delete stored[oldName]
-  stored[newName] = { interval, ingredients: ingredients || [] }
+  stored[newName] = { ...existing, interval, ingredients: ingredients || [] }
   saveStoredMeds(stored)
 }
 

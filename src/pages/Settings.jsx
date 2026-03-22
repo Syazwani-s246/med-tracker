@@ -198,14 +198,16 @@ export default function Settings() {
     const finalIngredients = editIngredientInput.trim()
       ? [...editIngredients, editIngredientInput.trim().toLowerCase()]
       : editIngredients
+    let savedName = editing.name
     if (editing.isDefault) {
       saveOverride(editing.name, interval, finalIngredients)
     } else {
       const trimmedName = editName.trim()
       if (!trimmedName) return
       updateCustomMedication(editing.name, trimmedName, interval, finalIngredients)
+      savedName = trimmedName
     }
-    setPrescribed(editing.name, editPrescribed)
+    setPrescribed(savedName, editPrescribed)
     closeEdit()
     reload()
   }
