@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#1a1625"/>
+  <!-- Capsule pill, rotated 45deg, centered -->
+  <g transform="translate(256,256) rotate(-35)">
+    <!-- Full pill body -->
+    <rect x="-130" y="-55" width="260" height="110" rx="55" fill="none" stroke="#c084fc" stroke-width="0"/>
+    <!-- Left half (purple) -->
+    <path d="M-130,-55 L0,-55 L0,55 L-130,55 A55,55 0 0 1 -130,-55 Z" fill="#7c3aed"/>
+    <!-- Right half (light purple) -->
+    <path d="M0,-55 L130,-55 A55,55 0 0 1 130,55 L0,55 Z" fill="#c084fc"/>
+    <!-- Divider line -->
+    <rect x="-3" y="-55" width="6" height="110" fill="#1a1625" opacity="0.6"/>
+    <!-- Highlight on left -->
+    <ellipse cx="-60" cy="-18" rx="28" ry="14" fill="white" opacity="0.15" transform="rotate(15,-60,-18)"/>
+  </g>
+</svg>

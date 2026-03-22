@@ -3,17 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary meta -->
+    <title>AmikUbat</title>
+    <meta name="description" content="Track your meds. Take care of yourself. A private, offline medication tracker." />
+    <meta name="keywords" content="medication tracker, pill reminder, health, amikubat, malaysia" />
+    <meta name="author" content="AmikUbat" />
+
+    <!-- Theme -->
     <meta name="theme-color" content="#1a1625" />
-    <meta name="description" content="AmikUbat — Track your meds. Take care of yourself." />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+
+    <!-- Apple / iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="AmikUbat" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+
+    <!-- iOS splash screens (portrait, common sizes) -->
+    <!-- iPhone 14 Pro Max -->
+    <link rel="apple-touch-startup-image"
+      media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/icons/pwa-512x512.png" />
+    <!-- iPhone 14 Pro -->
+    <link rel="apple-touch-startup-image"
+      media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/icons/pwa-512x512.png" />
+    <!-- iPhone 14 / 13 / 12 -->
+    <link rel="apple-touch-startup-image"
+      media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/icons/pwa-512x512.png" />
+    <!-- iPhone SE (3rd gen) -->
+    <link rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/icons/pwa-512x512.png" />
+
+    <!-- Android / Chrome -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="AmikUbat" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AmikUbat — Medication Tracker" />
+    <meta property="og:description" content="Track your meds. Take care of yourself. Private, offline, no login required." />
+    <meta property="og:image" content="/icons/pwa-512x512.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="AmikUbat" />
+    <meta name="twitter:description" content="Track your meds. Take care of yourself." />
+    <meta name="twitter:image" content="/icons/pwa-512x512.png" />
+
+    <!-- Microsoft / Windows -->
+    <meta name="msapplication-TileColor" content="#1a1625" />
+    <meta name="msapplication-TileImage" content="/icons/pwa-512x512.png" />
+    <meta name="msapplication-config" content="none" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>AmikUbat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

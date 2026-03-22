@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { hasSeenDisclaimer } from './db'
 import DisclaimerModal from './components/DisclaimerModal'
 import BottomNav from './components/BottomNav'
+import InstallPrompt from './components/InstallPrompt'
 import Landing from './pages/Landing'
 import Today from './pages/Today'
 import LogMed from './pages/LogMed'
@@ -28,6 +29,7 @@ function AppShell() {
         <Route path="/summary" element={<Summary />} />
       </Routes>
       <BottomNav />
+      <InstallPrompt />
       {showDisclaimer && (
         <DisclaimerModal onDismiss={() => setShowDisclaimer(false)} />
       )}
