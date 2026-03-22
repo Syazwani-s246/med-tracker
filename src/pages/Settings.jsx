@@ -7,6 +7,8 @@ import {
   addCustomMedication,
   updateCustomMedication,
   deleteCustomMedication,
+  deleteDefaultMedication,
+  getHiddenDefaults,
 } from '../medicationStore'
 import styles from './Settings.module.css'
 
@@ -33,9 +35,11 @@ export default function Settings() {
   const [newIngredients, setNewIngredients] = useState([])
   const [newIngredientInput, setNewIngredientInput] = useState('')
   const [addError, setAddError] = useState('')
+  const [hiddenMeds, setHiddenMeds] = useState([])
 
   function reload() {
     setMeds(getMergedMedications())
+    setHiddenMeds(getHiddenDefaults())
   }
 
   useEffect(() => {
@@ -105,7 +109,11 @@ export default function Settings() {
   }
 
   function handleDelete() {
-    deleteCustomMedication(editing.name)
+    if (editing.isDefault) {
+      deleteDefaultMedication(editing.name)
+    } else {
+      deleteCustomMedication(editing.name)
+    }
     closeEdit()
     reload()
   }
@@ -165,6 +173,25 @@ export default function Settings() {
           ))}
         </div>
       </section>
+
+      {/* Hidden default medications */}
+      {hiddenMeds.length > 0 && (
+        <section className={styles.section}>
+          <p className={styles.sectionLabel}>Hidden Medications</p>
+          <div className={styles.list}>
+            {hiddenMeds.map((name) => (
+              <button
+                key={name}
+                className={styles.medRow}
+                onClick={() => { resetDefault(name); reload() }}
+              >
+                <span className={styles.medName}>{name}</span>
+                <span className={styles.medInterval}>Tap to restore</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Custom medications */}
       <section className={styles.section}>
@@ -330,11 +357,9 @@ export default function Settings() {
             )}
 
             <div className={styles.sheetActions}>
-              {!editing.isDefault && (
-                <button className={styles.deleteBtn} onClick={handleDelete}>
-                  Delete
-                </button>
-              )}
+              <button className={styles.deleteBtn} onClick={handleDelete}>
+                Delete
+              </button>
               <button className={styles.cancelBtn} onClick={closeEdit}>
                 Cancel
               </button>

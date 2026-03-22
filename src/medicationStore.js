@@ -26,10 +26,14 @@ export function getMergedMedications() {
       (m) => m.name.toLowerCase() === name.toLowerCase()
     )
     if (idx !== -1) {
-      result[idx] = {
-        ...result[idx],
-        interval: data.interval,
-        ...(data.ingredients !== undefined ? { ingredients: data.ingredients } : {}),
+      if (data.deleted) {
+        result.splice(idx, 1)
+      } else {
+        result[idx] = {
+          ...result[idx],
+          interval: data.interval,
+          ...(data.ingredients !== undefined ? { ingredients: data.ingredients } : {}),
+        }
       }
     } else {
       result.push({ name, ingredients: data.ingredients || [], interval: data.interval, isDefault: false })
@@ -101,4 +105,17 @@ export function deleteCustomMedication(name) {
   const stored = getStoredMeds()
   delete stored[name]
   saveStoredMeds(stored)
+}
+
+// Hide a default medication from the list
+export function deleteDefaultMedication(name) {
+  const stored = getStoredMeds()
+  stored[name] = { deleted: true }
+  saveStoredMeds(stored)
+}
+
+// Returns list of default medication names that the user has hidden
+export function getHiddenDefaults() {
+  const stored = getStoredMeds()
+  return MEDICATIONS.filter((m) => stored[m.name]?.deleted).map((m) => m.name)
 }
