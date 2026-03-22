@@ -3,7 +3,7 @@
   animation: fadeIn 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
 @keyframes fadeIn {
@@ -12,9 +12,7 @@
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  margin-bottom: 0;
 }
 
 .title {
@@ -25,71 +23,32 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.toggle {
-  display: flex;
-  background: #261f3b;
-  border-radius: 12px;
-  padding: 4px;
-  gap: 4px;
-}
-
-.toggleBtn {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: #6b6480;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  transition: all 0.15s;
-}
-
-.toggleActive {
-  background: #3b2e5e;
-  color: #c084fc;
-}
-
 /* Section */
 .section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
+.sectionLabel {
+  font-size: 12px;
   font-weight: 700;
-  color: #9b8fc0;
+  color: #6b6480;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0 0 2px;
 }
 
-.sectionIcon {
-  font-size: 16px;
-  color: #c084fc;
-}
-
-/* Insights */
-.insightsList {
+/* Section 1: Glance card */
+.glanceCard {
+  background: #261f3b;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid rgba(192, 132, 252, 0.12);
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.insightCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: #261f3b;
-  border-radius: 14px;
-  padding: 14px 16px;
   animation: slideUp 0.25s ease both;
 }
 
@@ -98,36 +57,185 @@
   to { opacity: 1; transform: translateY(0) }
 }
 
-.insightIcon {
+.glanceMsg {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.glanceMeta {
+  font-size: 13px;
+  color: #9b8fc0;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.5;
+}
+
+/* Shared card list */
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Section 2: Med consistency */
+.medCard {
+  background: #1e1a2e;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: slideUp 0.25s ease both;
+}
+
+.medCardMsg {
+  font-size: 14px;
+  color: #c4b8e8;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.overuseNudge {
+  font-size: 13px;
+  color: #fbbf24;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 8px 10px;
+  background: rgba(251, 191, 36, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  line-height: 1.5;
+}
+
+/* Section 3: Effect rates */
+.effectCard {
+  background: #1e1a2e;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: slideUp 0.25s ease both;
+}
+
+.effectName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+}
+
+.effectDesc {
+  font-size: 13px;
+  color: #9b8fc0;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Section 4: Notes & Symptoms */
+.emptyNote {
+  font-size: 13px;
+  color: #4a3f6b;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.weekGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weekLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5c5079;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0 0 2px;
+}
+
+.noteEntry {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #1e1a2e;
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  animation: slideUp 0.25s ease both;
+}
+
+.noteTypeIcon {
+  font-size: 15px;
   flex-shrink: 0;
-  font-size: 18px;
-  color: #c084fc;
   margin-top: 1px;
 }
 
-.insightText {
-  font-size: 14px;
-  color: #b0a8cc;
-  margin: 0;
-  line-height: 1.6;
-  font-family: 'Nunito', sans-serif;
-}
-
-.overuseList {
+.noteBody {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
+  min-width: 0;
 }
 
-.overuseCard {
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.2);
+.noteDate {
+  font-size: 11px;
+  color: #5c5079;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+}
+
+.noteText {
+  font-size: 13px;
+  color: #b0a8cc;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Section 5: Medication History */
+.historyCard {
+  background: #1e1a2e;
   border-radius: 14px;
   padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: slideUp 0.25s ease both;
 }
 
-.overuseCard .insightText {
-  color: #fbbf24;
+.historyMedName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+}
+
+.historyCourseRow {
+  font-size: 13px;
+  color: #9b8fc0;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding-left: 10px;
+  border-left: 2px solid rgba(192, 132, 252, 0.2);
+  line-height: 1.5;
 }
 
 /* Data section */
