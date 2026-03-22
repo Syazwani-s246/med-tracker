@@ -1,0 +1,64 @@
+.page {
+  padding: 24px 20px calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.dateLabel {
+  font-size: 13px;
+  color: #6b6480;
+  margin: 0 0 4px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ede9fe;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.count {
+  font-size: 13px;
+  color: #6b6480;
+  margin: 0 0 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px;
+  color: #6b6480;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+}
+
+.emptyEmoji {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.emptySubtext {
+  font-size: 13px;
+  color: #4a3f6b;
+  margin-top: 4px;
+}

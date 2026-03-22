@@ -1,0 +1,163 @@
+.page {
+  min-height: 100vh;
+  padding: 0 0 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 24px 48px;
+  background: radial-gradient(ellipse at top, rgba(124, 58, 237, 0.25) 0%, transparent 60%);
+}
+
+.pill {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 30px;
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.appName {
+  font-size: 52px;
+  font-weight: 800;
+  color: #ede9fe;
+  margin: 0 0 12px;
+  letter-spacing: -1px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(135deg, #ede9fe, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 18px;
+  color: #9b8fc0;
+  margin: 0 0 36px;
+  line-height: 1.5;
+  font-family: 'Nunito', sans-serif;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 36px;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #c084fc);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.5);
+}
+
+.ctaIcon {
+  font-size: 18px;
+}
+
+/* USP grid */
+.uspGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px;
+}
+
+.uspCard {
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uspIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 22px;
+}
+
+.uspTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ede9fe;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.uspDesc {
+  font-size: 12px;
+  color: #9b8fc0;
+  margin: 0;
+  line-height: 1.5;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Safety banner */
+.safetyBanner {
+  margin: 0 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  color: #fbbf24;
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+}
+
+.bannerIcon {
+  flex-shrink: 0;
+  font-size: 22px;
+  margin-top: 1px;
+}
+
+/* Footer */
+.footer {
+  padding: 0 24px;
+  text-align: center;
+  color: #5c5079;
+  font-size: 12px;
+  font-family: 'Nunito', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emergency strong {
+  color: #f87171;
+}

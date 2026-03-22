@@ -1,0 +1,28 @@
+.toast {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: #2d2547;
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  color: #ede9fe;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+  z-index: 300;
+  transition: opacity 0.3s, transform 0.3s;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.in {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.out {
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px);
+}

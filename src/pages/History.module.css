@@ -1,0 +1,222 @@
+.page {
+  padding: 24px 20px calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.header {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ede9fe;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b6480;
+  font-size: 18px;
+}
+
+.search {
+  width: 100%;
+  padding: 13px 16px 13px 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #261f3b;
+  color: #ede9fe;
+  font-size: 15px;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.search:focus {
+  border-color: rgba(192, 132, 252, 0.4);
+}
+
+.search::placeholder {
+  color: #4a3f6b;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group {
+  background: #1e1a2e;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.groupHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #ede9fe;
+  font-size: 20px;
+  text-align: left;
+}
+
+.groupDate {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.groupCount {
+  display: block;
+  font-size: 12px;
+  color: #6b6480;
+  font-family: 'Nunito', sans-serif;
+  margin-top: 2px;
+}
+
+.groupEntries {
+  padding: 0 12px 12px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px;
+  color: #6b6480;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  text-align: center;
+}
+
+.emptyEmoji {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+/* Modal overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px 32px;
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+
+.editModal {
+  background: #1e1a2e;
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.editTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ede9fe;
+  margin: 0 0 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.deleteMsg {
+  font-size: 14px;
+  color: #9b8fc0;
+  margin: 0 0 20px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.editEffects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.effectBtn {
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #261f3b;
+  color: #9b8fc0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.effectBtnActive {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: rgba(192, 132, 252, 0.5);
+  color: #ede9fe;
+}
+
+.editActions {
+  display: flex;
+  gap: 12px;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  background: transparent;
+  color: #c084fc;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.saveBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #c084fc);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.deleteSaveBtn {
+  background: linear-gradient(135deg, #991b1b, #f87171);
+}

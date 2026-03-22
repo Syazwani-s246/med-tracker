@@ -1,0 +1,177 @@
+.page {
+  padding: 24px 20px calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  animation: fadeIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ede9fe;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.toggle {
+  display: flex;
+  background: #261f3b;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #6b6480;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.toggleActive {
+  background: #3b2e5e;
+  color: #c084fc;
+}
+
+/* Section */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #9b8fc0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sectionIcon {
+  font-size: 16px;
+  color: #c084fc;
+}
+
+/* Insights */
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insightCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #261f3b;
+  border-radius: 14px;
+  padding: 14px 16px;
+  animation: slideUp 0.25s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+.insightIcon {
+  flex-shrink: 0;
+  font-size: 18px;
+  color: #c084fc;
+  margin-top: 1px;
+}
+
+.insightText {
+  font-size: 14px;
+  color: #b0a8cc;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'Nunito', sans-serif;
+}
+
+.overuseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overuseCard {
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.overuseCard .insightText {
+  color: #fbbf24;
+}
+
+/* Data section */
+.dataButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dataBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  background: #261f3b;
+  color: #c084fc;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.dataBtn:hover {
+  background: rgba(192, 132, 252, 0.1);
+}
+
+.dataBtnImport {
+  grid-column: 1 / -1;
+  border-color: rgba(52, 211, 153, 0.25);
+  color: #34d399;
+}
+
+.dataBtnImport:hover {
+  background: rgba(52, 211, 153, 0.08);
+}
+
+.dataNote {
+  font-size: 12px;
+  color: #5c5079;
+  margin: 0;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+}
