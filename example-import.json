@@ -1,0 +1,110 @@
+[
+  {
+    "id": "11111111-0000-0000-0000-000000000001",
+    "name": "Panadol",
+    "dose": "500mg",
+    "timestamp": "2026-03-22T08:30:00.000Z",
+    "reason": "headache",
+    "effect": "helped",
+    "notes": ""
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000002",
+    "name": "Panadol",
+    "dose": "500mg",
+    "timestamp": "2026-03-22T14:00:00.000Z",
+    "reason": "headache",
+    "effect": "somewhat",
+    "notes": "Still a bit of pain after"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000003",
+    "name": "Loratadine",
+    "dose": "10mg",
+    "timestamp": "2026-03-21T09:00:00.000Z",
+    "reason": "other",
+    "effect": "helped",
+    "notes": "Took for dust allergy"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000004",
+    "name": "Ibuprofen",
+    "dose": "400mg",
+    "timestamp": "2026-03-20T19:45:00.000Z",
+    "reason": "muscle pain",
+    "effect": "helped",
+    "notes": ""
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000005",
+    "name": "Omeprazole",
+    "dose": "20mg",
+    "timestamp": "2026-03-20T07:00:00.000Z",
+    "reason": "stomachache",
+    "effect": "helped",
+    "notes": "Before breakfast"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000006",
+    "name": "Polaramine",
+    "dose": "2mg",
+    "timestamp": "2026-03-19T22:00:00.000Z",
+    "reason": "other",
+    "effect": "helped",
+    "notes": "Runny nose at night"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000007",
+    "name": "Panadol",
+    "dose": "1g",
+    "timestamp": "2026-03-18T06:30:00.000Z",
+    "reason": "fever",
+    "effect": "helped",
+    "notes": "Temperature was 38.5"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000008",
+    "name": "Panadol",
+    "dose": "1g",
+    "timestamp": "2026-03-18T12:00:00.000Z",
+    "reason": "fever",
+    "effect": "somewhat",
+    "notes": "Fever came back"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000009",
+    "name": "Panadol",
+    "dose": "1g",
+    "timestamp": "2026-03-18T18:00:00.000Z",
+    "reason": "fever",
+    "effect": "helped",
+    "notes": "Feeling better by evening"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000010",
+    "name": "Buscopan",
+    "dose": "10mg",
+    "timestamp": "2026-03-17T13:15:00.000Z",
+    "reason": "stomachache",
+    "effect": "helped",
+    "notes": ""
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000011",
+    "name": "Propranolol",
+    "dose": "10mg",
+    "timestamp": "2026-03-17T08:00:00.000Z",
+    "reason": "anxiety",
+    "effect": "helped",
+    "notes": "Before presentation"
+  },
+  {
+    "id": "11111111-0000-0000-0000-000000000012",
+    "name": "Uphamol",
+    "dose": "500mg",
+    "timestamp": "2026-03-16T10:00:00.000Z",
+    "reason": "headache",
+    "effect": "none",
+    "notes": "Did not help this time"
+  }
+]
