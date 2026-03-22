@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getLogs, deleteLog, updateLog } from '../db'
 import MedCard from '../components/MedCard'
+import NoteCard from '../components/NoteCard'
 import Toast from '../components/Toast'
 import { RiSearchLine, RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri'
 import styles from './History.module.css'
@@ -30,6 +31,15 @@ function dateLabel(dateStr) {
   return d.toLocaleDateString('en-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+function entryCountLabel(logs) {
+  const meds = logs.filter((l) => l.type !== 'note').length
+  const notes = logs.filter((l) => l.type === 'note').length
+  const parts = []
+  if (meds > 0) parts.push(`${meds} med${meds !== 1 ? 's' : ''}`)
+  if (notes > 0) parts.push(`${notes} note${notes !== 1 ? 's' : ''}`)
+  return parts.join(', ') || '0 entries'
+}
+
 const EFFECTS = [
   { value: 'helped', label: '✅ Helped' },
   { value: 'somewhat', label: '〰️ Somewhat' },
@@ -56,11 +66,21 @@ export default function History() {
   }, [loadLogs])
 
   const filtered = query
-    ? logs.filter((l) => l.name.toLowerCase().includes(query.toLowerCase()))
+    ? logs.filter((l) => {
+        const q = query.toLowerCase()
+        if (l.type === 'note') return (l.text || '').toLowerCase().includes(q)
+        return (l.name || '').toLowerCase().includes(q)
+      })
     : logs
 
   const groups = groupByDate(filtered)
   const sortedKeys = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a))
+
+  function getLinkedMedName(log) {
+    if (!log.linkedMedId) return null
+    const med = logs.find((l) => l.id === log.linkedMedId)
+    return med?.name || null
+  }
 
   function toggleExpand(key) {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }))
@@ -98,7 +118,7 @@ export default function History() {
           <input
             className={styles.search}
             type="text"
-            placeholder="Search medications..."
+            placeholder="Search entries..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -108,12 +128,12 @@ export default function History() {
       {sortedKeys.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyEmoji}>📋</div>
-          <p>{query ? 'No results found.' : 'No medication history yet.'}</p>
+          <p>{query ? 'No results found.' : 'No history yet.'}</p>
         </div>
       ) : (
         <div className={styles.groups}>
           {sortedKeys.map((key) => {
-            const dayLogs = groups[key]
+            const dayLogs = groups[key].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
             const isOpen = expanded[key] !== false // default open
             return (
               <div key={key} className={styles.group}>
@@ -123,22 +143,29 @@ export default function History() {
                 >
                   <div>
                     <span className={styles.groupDate}>{dateLabel(key)}</span>
-                    <span className={styles.groupCount}>
-                      {dayLogs.length} medication{dayLogs.length !== 1 ? 's' : ''}
-                    </span>
+                    <span className={styles.groupCount}>{entryCountLabel(dayLogs)}</span>
                   </div>
                   {isOpen ? <RiArrowUpSLine /> : <RiArrowDownSLine />}
                 </button>
                 {isOpen && (
                   <div className={styles.groupEntries}>
-                    {dayLogs.map((log) => (
-                      <MedCard
-                        key={log.id}
-                        log={log}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    ))}
+                    {dayLogs.map((log) =>
+                      log.type === 'note' ? (
+                        <NoteCard
+                          key={log.id}
+                          log={log}
+                          linkedMedName={getLinkedMedName(log)}
+                          onDelete={handleDelete}
+                        />
+                      ) : (
+                        <MedCard
+                          key={log.id}
+                          log={log}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      )
+                    )}
                   </div>
                 )}
               </div>

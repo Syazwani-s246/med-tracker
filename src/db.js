@@ -26,12 +26,27 @@ export function addLog(entry) {
   const logs = getLogs()
   const newEntry = {
     id: generateId(),
+    type: 'med',
     name: entry.name || '',
     dose: entry.dose || '',
     timestamp: entry.timestamp || new Date().toISOString(),
     reason: entry.reason || '',
     effect: entry.effect || 'unknown',
     notes: entry.notes || '',
+  }
+  logs.push(newEntry)
+  saveLogs(logs)
+  return newEntry
+}
+
+export function addNote(entry) {
+  const logs = getLogs()
+  const newEntry = {
+    id: generateId(),
+    type: 'note',
+    timestamp: entry.timestamp || new Date().toISOString(),
+    text: entry.text || '',
+    linkedMedId: entry.linkedMedId || '',
   }
   logs.push(newEntry)
   saveLogs(logs)
@@ -83,12 +98,16 @@ export function exportJSON() {
 
 export function exportCSV() {
   const logs = getLogs()
-  const header = 'date,time,medication,dose,reason,effect,notes'
+  const header = 'date,time,type,medication,dose,reason,effect,notes,text,linkedMedId'
   const rows = logs.map((l) => {
     const dt = new Date(l.timestamp)
     const date = dt.toLocaleDateString('en-MY')
     const time = dt.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' })
-    return [date, time, q(l.name), q(l.dose), q(l.reason), q(l.effect), q(l.notes)].join(',')
+    const type = l.type || 'med'
+    if (type === 'note') {
+      return [date, time, q('note'), q(''), q(''), q(''), q(''), q(''), q(l.text), q(l.linkedMedId)].join(',')
+    }
+    return [date, time, q('med'), q(l.name), q(l.dose), q(l.reason), q(l.effect), q(l.notes), q(''), q('')].join(',')
   })
   const csv = [header, ...rows].join('\n')
   const blob = new Blob([csv], { type: 'text/csv' })
@@ -118,12 +137,16 @@ export function importJSON(jsonString) {
   }
 
   const existing = getLogs()
-  const existingKeys = new Set(existing.map((l) => `${l.timestamp}|${l.name}`))
+  const dedupeKey = (l) => {
+    if (l.type === 'note') return `${l.timestamp}|note|${(l.text || '').slice(0, 30)}`
+    return `${l.timestamp}|${l.name || ''}`
+  }
+  const existingKeys = new Set(existing.map(dedupeKey))
 
   const merged = [...existing]
   let added = 0
   for (const entry of incoming) {
-    const key = `${entry.timestamp}|${entry.name}`
+    const key = dedupeKey(entry)
     if (!existingKeys.has(key)) {
       merged.push({ ...entry, id: entry.id || generateId() })
       added++

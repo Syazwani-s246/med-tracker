@@ -62,3 +62,161 @@
   color: #4a3f6b;
   margin-top: 4px;
 }
+
+/* Log picker FAB */
+.pickerWrap {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 16px);
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  z-index: 100;
+}
+
+.pickerOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.95) }
+  to { opacity: 1; transform: translateY(0) scale(1) }
+}
+
+.pickerOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e1a2e;
+  color: #ede9fe;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s;
+}
+
+.pickerOption:hover {
+  transform: scale(1.03);
+}
+
+.pickerOptionNote {
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.pickerOptionIcon {
+  font-size: 18px;
+}
+
+.fab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #c084fc);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fab:hover {
+  transform: scale(1.05);
+}
+
+.fabOpen {
+  background: #2d2547;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.fabIcon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.fabLabel {
+  font-size: 14px;
+}
+
+/* Delete confirm modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px;
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  z-index: 200;
+}
+
+.deleteModal {
+  background: #1e1a2e;
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.deleteTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ede9fe;
+  margin: 0 0 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.deleteMsg {
+  font-size: 14px;
+  color: #9b8fc0;
+  margin: 0 0 20px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.deleteActions {
+  display: flex;
+  gap: 12px;
+}
+
+.cancelBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  background: transparent;
+  color: #c084fc;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.confirmBtn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #991b1b, #f87171);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
