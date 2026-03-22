@@ -535,3 +535,20 @@
 .deleteSaveBtn {
   background: linear-gradient(135deg, #991b1b, #f87171);
 }
+
+.deleteConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 14px;
+}
+
+.deleteConfirmMsg {
+  font-size: 14px;
+  color: #f87171;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+}

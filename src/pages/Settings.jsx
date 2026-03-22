@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react'
-import { MEDICATIONS } from '../medications'
 import {
   getMergedMedications,
   saveOverride,
-  resetDefault,
   addCustomMedication,
   updateCustomMedication,
   deleteCustomMedication,
   deleteDefaultMedication,
-  getHiddenDefaults,
   getCourses,
   addCourse,
   updateCourse,
@@ -44,10 +41,6 @@ function formatInterval(interval) {
   return `${interval} hour${interval !== 1 ? 's' : ''}`
 }
 
-function getDefaultInterval(name) {
-  const def = MEDICATIONS.find((m) => m.name.toLowerCase() === name.toLowerCase())
-  return def ? def.interval : 0
-}
 
 export default function Settings() {
   const [meds, setMeds] = useState([])
@@ -63,7 +56,7 @@ export default function Settings() {
   const [newIngredientInput, setNewIngredientInput] = useState('')
   const [addError, setAddError] = useState('')
   const [newPrescribed, setNewPrescribed] = useState(false)
-  const [hiddenMeds, setHiddenMeds] = useState([])
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // Course state
   const [courses, setCourses] = useState([])
@@ -78,7 +71,6 @@ export default function Settings() {
 
   function reload() {
     setMeds(getMergedMedications())
-    setHiddenMeds(getHiddenDefaults())
   }
 
   useEffect(() => {
@@ -111,6 +103,7 @@ export default function Settings() {
     setCourseForm(null)
     setCourseFormError('')
     setCourseDeleteConfirm(null)
+    setShowDeleteConfirm(false)
   }
 
   function openCourseAdd() {
@@ -212,13 +205,11 @@ export default function Settings() {
     reload()
   }
 
-  function handleReset() {
-    resetDefault(editing.name)
-    closeEdit()
-    reload()
+  function handleDelete() {
+    setShowDeleteConfirm(true)
   }
 
-  function handleDelete() {
+  function confirmDelete() {
     if (editing.isDefault) {
       deleteDefaultMedication(editing.name)
     } else {
@@ -256,12 +247,6 @@ export default function Settings() {
     reload()
   }
 
-  const defaultOriginalInterval = editing?.isDefault
-    ? getDefaultInterval(editing.name)
-    : null
-  const isOverridden =
-    editing?.isDefault && editing.interval !== defaultOriginalInterval
-
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -284,25 +269,6 @@ export default function Settings() {
           ))}
         </div>
       </section>
-
-      {/* Hidden default medications */}
-      {hiddenMeds.length > 0 && (
-        <section className={styles.section}>
-          <p className={styles.sectionLabel}>Hidden Medications</p>
-          <div className={styles.list}>
-            {hiddenMeds.map((name) => (
-              <button
-                key={name}
-                className={styles.medRow}
-                onClick={() => { resetDefault(name); reload() }}
-              >
-                <span className={styles.medName}>{name}</span>
-                <span className={styles.medInterval}>Tap to restore</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Custom medications */}
       <section className={styles.section}>
@@ -584,23 +550,31 @@ export default function Settings() {
               )}
             </div>
 
-            {editing.isDefault && isOverridden && (
-              <button className={styles.resetBtn} onClick={handleReset}>
-                Reset to default ({formatInterval(defaultOriginalInterval)})
-              </button>
+            {showDeleteConfirm ? (
+              <div className={styles.deleteConfirm}>
+                <p className={styles.deleteConfirmMsg}>Remove {editing.name} from your list?</p>
+                <div className={styles.sheetActions}>
+                  <button className={styles.cancelBtn} onClick={() => setShowDeleteConfirm(false)}>
+                    Cancel
+                  </button>
+                  <button className={`${styles.saveBtn} ${styles.deleteSaveBtn}`} onClick={confirmDelete}>
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.sheetActions}>
+                <button className={styles.deleteBtn} onClick={handleDelete}>
+                  Delete
+                </button>
+                <button className={styles.cancelBtn} onClick={closeEdit}>
+                  Cancel
+                </button>
+                <button className={styles.saveBtn} onClick={handleSaveEdit}>
+                  Save
+                </button>
+              </div>
             )}
-
-            <div className={styles.sheetActions}>
-              <button className={styles.deleteBtn} onClick={handleDelete}>
-                Delete
-              </button>
-              <button className={styles.cancelBtn} onClick={closeEdit}>
-                Cancel
-              </button>
-              <button className={styles.saveBtn} onClick={handleSaveEdit}>
-                Save
-              </button>
-            </div>
           </div>
         </div>
       )}
