@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { RiFileTextLine, RiTimeLine, RiLinkM } from 'react-icons/ri'
+import { RiFileTextLine, RiTimeLine, RiLinkM, RiHeartPulseLine } from 'react-icons/ri'
 import styles from './NoteCard.module.css'
 
 function formatTime(timestamp) {
@@ -16,7 +16,7 @@ export default function NoteCard({ log, linkedMedName, onDelete }) {
     <div className={styles.card} onClick={() => setExpanded((v) => !v)}>
       <div className={styles.left}>
         <div className={styles.iconWrap}>
-          <RiFileTextLine />
+          {log.type === 'symptom' ? <RiHeartPulseLine /> : <RiFileTextLine />}
         </div>
       </div>
       <div className={styles.body}>

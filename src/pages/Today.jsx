@@ -4,6 +4,7 @@ import { getLogsForToday, getLogs, deleteLog } from '../db'
 import MedCard from '../components/MedCard'
 import NoteCard from '../components/NoteCard'
 import LogNoteModal from '../components/LogNoteModal'
+import LogSymptomModal from '../components/LogSymptomModal'
 import Toast from '../components/Toast'
 import styles from './Today.module.css'
 
@@ -27,6 +28,7 @@ export default function Today() {
   const [allLogs, setAllLogs] = useState([])
   const [pickerOpen, setPickerOpen] = useState(false)
   const [showNoteModal, setShowNoteModal] = useState(false)
+  const [showSymptomModal, setShowSymptomModal] = useState(false)
   const [toast, setToast] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
 
@@ -58,7 +60,7 @@ export default function Today() {
     } else if (type === 'note') {
       setShowNoteModal(true)
     } else if (type === 'symptom') {
-      navigate('/log')
+      setShowSymptomModal(true)
     }
   }
 
@@ -79,7 +81,7 @@ export default function Today() {
         <div className={styles.list}>
           <p className={styles.count}>{logs.length} entr{logs.length !== 1 ? 'ies' : 'y'} today</p>
           {logs.map((log) =>
-            log.type === 'note' ? (
+            log.type === 'note' || log.type === 'symptom' ? (
               <NoteCard
                 key={log.id}
                 log={log}
@@ -124,6 +126,13 @@ export default function Today() {
       {showNoteModal && (
         <LogNoteModal
           onClose={() => setShowNoteModal(false)}
+          onSaved={loadLogs}
+        />
+      )}
+
+      {showSymptomModal && (
+        <LogSymptomModal
+          onClose={() => setShowSymptomModal(false)}
           onSaved={loadLogs}
         />
       )}

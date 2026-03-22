@@ -47,6 +47,19 @@ export function addLog(entry) {
   return newEntry
 }
 
+export function addSymptom(entry) {
+  const logs = getLogs()
+  const newEntry = {
+    id: generateId(),
+    type: 'symptom',
+    timestamp: entry.timestamp || localISOString(),
+    text: entry.text || '',
+  }
+  logs.push(newEntry)
+  saveLogs(logs)
+  return newEntry
+}
+
 export function addNote(entry) {
   const logs = getLogs()
   const newEntry = {
