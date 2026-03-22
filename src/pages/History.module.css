@@ -220,3 +220,28 @@
 .deleteSaveBtn {
   background: linear-gradient(135deg, #991b1b, #f87171);
 }
+
+/* Course timeline markers */
+.courseMarker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 4px;
+  margin: 2px 0;
+}
+
+.courseMarkerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4a3f6b;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.courseMarkerText {
+  font-size: 11px;
+  color: #4a3f6b;
+  font-family: 'Nunito', sans-serif;
+  font-style: italic;
+}

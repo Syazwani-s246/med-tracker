@@ -1,10 +1,38 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getLogs, deleteLog, updateLog } from '../db'
+import { getMergedMedications, getCourses } from '../medicationStore'
 import MedCard from '../components/MedCard'
 import NoteCard from '../components/NoteCard'
 import Toast from '../components/Toast'
 import { RiSearchLine, RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri'
 import styles from './History.module.css'
+
+function buildCourseMarkers() {
+  const meds = getMergedMedications()
+  const markers = []
+  for (const med of meds) {
+    const courses = getCourses(med.name)
+    for (const course of courses) {
+      markers.push({
+        id: `course-start-${course.id}`,
+        type: 'course-start',
+        name: med.name,
+        dose: course.dose,
+        timestamp: course.startDate + 'T00:00:00',
+      })
+      if (course.endDate) {
+        markers.push({
+          id: `course-end-${course.id}`,
+          type: 'course-end',
+          name: med.name,
+          dose: course.dose,
+          timestamp: course.endDate + 'T23:59:59',
+        })
+      }
+    }
+  }
+  return markers
+}
 
 function groupByDate(logs) {
   const groups = {}
@@ -32,7 +60,7 @@ function dateLabel(dateStr) {
 }
 
 function entryCountLabel(logs) {
-  const meds = logs.filter((l) => l.type !== 'note').length
+  const meds = logs.filter((l) => l.type !== 'note' && l.type !== 'course-start' && l.type !== 'course-end').length
   const notes = logs.filter((l) => l.type === 'note').length
   const parts = []
   if (meds > 0) parts.push(`${meds} med${meds !== 1 ? 's' : ''}`)
@@ -65,6 +93,8 @@ export default function History() {
     loadLogs()
   }, [loadLogs])
 
+  const markers = buildCourseMarkers()
+
   const filtered = query
     ? logs.filter((l) => {
         const q = query.toLowerCase()
@@ -73,7 +103,14 @@ export default function History() {
       })
     : logs
 
-  const groups = groupByDate(filtered)
+  // Only inject markers when not searching, and only for dates that have existing log entries
+  const existingDateKeys = new Set(filtered.map((l) => new Date(l.timestamp).toDateString()))
+  const relevantMarkers = query
+    ? []
+    : markers.filter((m) => existingDateKeys.has(new Date(m.timestamp).toDateString()))
+
+  const allEntries = [...filtered, ...relevantMarkers]
+  const groups = groupByDate(allEntries)
   const sortedKeys = Object.keys(groups).sort((a, b) => new Date(b) - new Date(a))
 
   function getLinkedMedName(log) {
@@ -149,15 +186,30 @@ export default function History() {
                 </button>
                 {isOpen && (
                   <div className={styles.groupEntries}>
-                    {dayLogs.map((log) =>
-                      log.type === 'note' ? (
-                        <NoteCard
-                          key={log.id}
-                          log={log}
-                          linkedMedName={getLinkedMedName(log)}
-                          onDelete={handleDelete}
-                        />
-                      ) : (
+                    {dayLogs.map((log) => {
+                      if (log.type === 'course-start' || log.type === 'course-end') {
+                        return (
+                          <div key={log.id} className={styles.courseMarker}>
+                            <span className={styles.courseMarkerDot} />
+                            <span className={styles.courseMarkerText}>
+                              {log.type === 'course-start'
+                                ? `Started ${log.name}${log.dose ? ` ${log.dose}` : ''}`
+                                : `Stopped ${log.name}${log.dose ? ` ${log.dose}` : ''}`}
+                            </span>
+                          </div>
+                        )
+                      }
+                      if (log.type === 'note') {
+                        return (
+                          <NoteCard
+                            key={log.id}
+                            log={log}
+                            linkedMedName={getLinkedMedName(log)}
+                            onDelete={handleDelete}
+                          />
+                        )
+                      }
+                      return (
                         <MedCard
                           key={log.id}
                           log={log}
@@ -165,7 +217,7 @@ export default function History() {
                           onDelete={handleDelete}
                         />
                       )
-                    )}
+                    })}
                   </div>
                 )}
               </div>
