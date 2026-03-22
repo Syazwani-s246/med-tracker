@@ -1,4 +1,5 @@
 // Pure JS insight generation — no AI, no backend
+import { getActiveCourse, isWithinAnyCourse, getPrescribed } from './medicationStore'
 
 function countByName(logs) {
   return logs.reduce((acc, l) => {
@@ -57,25 +58,45 @@ export function generateInsights(logs, period = 'week') {
     }
   }
 
-  const counts = countByName(logs)
-  const tod = mostCommonTimeOfDay(logs)
-  const medFreeDays = countMedFreeDays(logs, days)
+  const medLogs = logs.filter((l) => l.type !== 'note')
+  const allCounts = countByName(medLogs)
+  const tod = mostCommonTimeOfDay(medLogs)
+  const medFreeDays = countMedFreeDays(medLogs, days)
   const label = period === 'week' ? 'This week' : 'This month'
 
   // Per-medication insights
-  for (const [name, count] of Object.entries(counts)) {
+  for (const [name, _total] of Object.entries(allCounts)) {
+    const activeCourse = getActiveCourse(name)
+    const prescribed = getPrescribed(name)
+
+    // Filter log entries to only those within a course (if any courses exist)
+    const nameLogs = medLogs.filter((l) => l.name === name)
+    const withinCourseLogs = nameLogs.filter((l) => {
+      const result = isWithinAnyCourse(name, l.timestamp)
+      return result === null || result === true
+    })
+    const count = withinCourseLogs.length
+
     insights.push(`${label}, you took ${name} ${count} time${count > 1 ? 's' : ''}.`)
 
-    const rate = effectRate(logs, name)
-    if (rate !== null && logs.filter((l) => l.name === name && l.effect !== 'unknown').length >= 2) {
+    const rate = effectRate(withinCourseLogs, name)
+    if (rate !== null && withinCourseLogs.filter((l) => l.effect !== 'unknown').length >= 2) {
       insights.push(`${name} helped you ${rate}% of the time.`)
     }
 
-    // Overuse nudge: more than 5x in 7 days
-    if (period === 'week' && count > 5) {
-      overuse.push(
-        `You've taken ${name} ${count} times in the last 7 days. If the pain persists, it might be worth speaking to a doctor. \uD83D\uDC9B`
-      )
+    // Consistency check: prescribed med with active course
+    if (activeCourse && prescribed && period === 'week') {
+      insights.push(`You've been consistent with ${name} this week \uD83D\uDC4D`)
+      continue
+    }
+
+    // Overuse nudge: non-prescribed med exceeding 5x in 7 days (skip if no active course but courses exist)
+    if (period === 'week' && count > 5 && !prescribed) {
+      if (activeCourse !== null || isWithinAnyCourse(name, new Date().toISOString()) === null) {
+        overuse.push(
+          `You've taken ${name} ${count} times in the last 7 days. If the pain persists, it might be worth speaking to a doctor. \uD83D\uDC9B`
+        )
+      }
     }
   }
 
