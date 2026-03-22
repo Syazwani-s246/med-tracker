@@ -7,6 +7,12 @@ function generateId() {
   return crypto.randomUUID()
 }
 
+function localISOString() {
+  const d = new Date()
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
+
 // --- Logs ---
 
 export function getLogs() {
@@ -29,7 +35,7 @@ export function addLog(entry) {
     type: 'med',
     name: entry.name || '',
     dose: entry.dose || '',
-    timestamp: entry.timestamp || new Date().toISOString(),
+    timestamp: entry.timestamp || localISOString(),
     reason: entry.reason || '',
     effect: entry.effect || 'unknown',
     notes: entry.notes || '',
@@ -44,7 +50,7 @@ export function addNote(entry) {
   const newEntry = {
     id: generateId(),
     type: 'note',
-    timestamp: entry.timestamp || new Date().toISOString(),
+    timestamp: entry.timestamp || localISOString(),
     text: entry.text || '',
     linkedMedId: entry.linkedMedId || '',
   }

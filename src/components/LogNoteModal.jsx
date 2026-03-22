@@ -35,7 +35,7 @@ export default function LogNoteModal({ onClose, onSaved }) {
   function handleSave() {
     addNote({
       text: text.trim(),
-      timestamp: new Date(timestamp).toISOString(),
+      timestamp,
       linkedMedId,
     })
     setToast('Note saved \uD83D\uDCDD')

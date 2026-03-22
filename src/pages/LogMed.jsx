@@ -111,7 +111,7 @@ export default function LogMed() {
     addLog({
       name: name.trim(),
       dose: dose.trim(),
-      timestamp: new Date(timestamp).toISOString(),
+      timestamp,
       reason: finalReason,
       effect,
     })
