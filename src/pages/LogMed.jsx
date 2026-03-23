@@ -56,7 +56,7 @@ export default function LogMed() {
     if (!interval) return true
 
     const recent = getLogs()
-      .filter((l) => l.name.toLowerCase() === name.trim().toLowerCase())
+      .filter((l) => l.type === 'med' && l.name.toLowerCase() === name.trim().toLowerCase())
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
 
     if (recent.length === 0) return true
@@ -82,7 +82,7 @@ export default function LogMed() {
 
     const recentLogs = getLogs().filter(
       (l) =>
-        l.type !== 'note' &&
+        l.type === 'med' &&
         l.name.toLowerCase() !== name.trim().toLowerCase() &&
         new Date(l.timestamp) >= cutoff &&
         new Date(l.timestamp) <= now
