@@ -168,18 +168,6 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url)
 }
 
-export function seedTestLogs() {
-  const pad = (n) => String(n).padStart(2, '0')
-  const d = new Date()
-  const base = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-  const existing = getLogs()
-  const seeds = [
-    { id: generateId(), type: 'med', name: 'Panadol', dose: '500mg', timestamp: `${base}T09:00`, reason: 'headache', effect: 'helped', notes: '' },
-    { id: generateId(), type: 'med', name: 'Uphamol', dose: '500mg', timestamp: `${base}T11:00`, reason: 'fever', effect: 'somewhat', notes: '' },
-  ]
-  saveLogs([...existing, ...seeds])
-}
-
 export function importJSON(jsonString) {
   let parsed
   try {

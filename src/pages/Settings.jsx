@@ -13,7 +13,6 @@ import {
   getPrescribed,
   setPrescribed,
 } from '../medicationStore'
-import { seedTestLogs } from '../db'
 import styles from './Settings.module.css'
 
 function formatCourseDate(dateStr) {
@@ -375,19 +374,6 @@ export default function Settings() {
           </button>
         )}
       </section>
-
-      {/* Edit bottom sheet */}
-      {import.meta.env.DEV && (
-        <section className={styles.section}>
-          <p className={styles.sectionLabel}>Dev Tools</p>
-          <button
-            className={styles.medRow}
-            onClick={() => { seedTestLogs(); alert('Seeded: Panadol (09:00) + Uphamol (11:00) for today. Refresh Today to see them.') }}
-          >
-            Seed 2 test meds for today
-          </button>
-        </section>
-      )}
 
       {editing && (
         <div className={styles.overlay} onClick={closeEdit}>
