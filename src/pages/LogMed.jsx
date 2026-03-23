@@ -35,6 +35,13 @@ export default function LogMed() {
   const [ingredientData, setIngredientData] = useState(null)
   const [toast, setToast] = useState(null)
   const nameRef = useRef(null)
+  const navigateTimerRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (navigateTimerRef.current) clearTimeout(navigateTimerRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     if (name.trim()) {
@@ -106,22 +113,46 @@ export default function LogMed() {
     }
   }
 
+  function resetForm() {
+    setName('')
+    setDose('')
+    setTimestamp(toLocalISOString(new Date()))
+    setReason('')
+    setCustomReason('')
+    setEffect('unknown')
+    setSuggestions([])
+    setShowSuggestions(false)
+    setSafetyData(null)
+    setPendingSave(false)
+    setIngredientData(null)
+  }
+
   function doSave() {
-    const finalReason = reason === 'other' ? customReason : reason
-    addLog({
-      name: name.trim(),
-      dose: dose.trim(),
-      timestamp,
-      reason: finalReason,
-      effect,
-    })
-    setToast('Logged! 💊')
-    setTimeout(() => navigate('/today'), 2500)
+    try {
+      const finalReason = reason === 'other' ? customReason : reason
+      addLog({
+        name: name.trim(),
+        dose: dose.trim(),
+        timestamp,
+        reason: finalReason,
+        effect,
+      })
+      resetForm()
+      setToast('Logged! 💊')
+      if (navigateTimerRef.current) clearTimeout(navigateTimerRef.current)
+      navigateTimerRef.current = setTimeout(() => navigate('/today'), 2500)
+    } catch {
+      setToast('Could not save — please try again.')
+    }
   }
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!name.trim()) return
+    if (navigateTimerRef.current) {
+      clearTimeout(navigateTimerRef.current)
+      navigateTimerRef.current = null
+    }
     const safe = checkSafety()
     if (!safe) {
       setPendingSave(true)
