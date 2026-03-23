@@ -31,7 +31,6 @@ export default function LogMed() {
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [safetyData, setSafetyData] = useState(null)
-  const [pendingSave, setPendingSave] = useState(false)
   const [ingredientData, setIngredientData] = useState(null)
   const [toast, setToast] = useState(null)
   const nameRef = useRef(null)
@@ -123,7 +122,6 @@ export default function LogMed() {
     setSuggestions([])
     setShowSuggestions(false)
     setSafetyData(null)
-    setPendingSave(false)
     setIngredientData(null)
   }
 
@@ -153,23 +151,23 @@ export default function LogMed() {
       clearTimeout(navigateTimerRef.current)
       navigateTimerRef.current = null
     }
-    const safe = checkSafety()
-    if (!safe) {
-      setPendingSave(true)
-    } else {
-      runIngredientCheck()
+    try {
+      const safe = checkSafety()
+      if (safe) {
+        runIngredientCheck()
+      }
+    } catch {
+      setToast('Something went wrong — please try again.')
     }
   }
 
   function handleSafetyContinue() {
     setSafetyData(null)
-    setPendingSave(false)
     runIngredientCheck()
   }
 
   function handleSafetyWait() {
     setSafetyData(null)
-    setPendingSave(false)
   }
 
   function handleIngredientContinue() {
