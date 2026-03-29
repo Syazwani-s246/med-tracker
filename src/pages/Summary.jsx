@@ -32,11 +32,21 @@ function getWeekStart(ts) {
 export default function Summary() {
   const [toast, setToast] = useState(null)
   const [view, setView] = useState('week')
+  const [expandedNotes, setExpandedNotes] = useState(new Set())
   const fileRef = useRef(null)
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [view])
+
+  function toggleNoteExpand(id) {
+    setExpandedNotes((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const weekLogs = getLogsSince(7)
   const monthLogs = getLogsSince(30)
@@ -275,15 +285,27 @@ export default function Summary() {
             {weekNotesAndSymptoms.length === 0 ? (
               <p className={styles.emptyNote}>No notes or symptoms logged this week</p>
             ) : (
-              weekNotesAndSymptoms.map((entry) => (
-                <div key={entry.id} className={styles.noteEntry}>
-                  <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
-                  <div className={styles.noteBody}>
-                    <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
-                    <p className={styles.noteText}>{entry.text || '—'}</p>
+              weekNotesAndSymptoms.map((entry) => {
+                const isExpanded = expandedNotes.has(entry.id)
+                const isLong = (entry.text || '').length > 80
+                return (
+                  <div
+                    key={entry.id}
+                    className={styles.noteEntry}
+                    onClick={() => isLong && toggleNoteExpand(entry.id)}
+                    style={isLong ? { cursor: 'pointer' } : undefined}
+                  >
+                    <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
+                    <div className={styles.noteBody}>
+                      <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
+                      <p className={isExpanded ? styles.noteTextExpanded : styles.noteText}>{entry.text || '—'}</p>
+                      {isLong && (
+                        <span className={styles.noteToggle}>{isExpanded ? 'show less ↑' : 'show more ↓'}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                )
+              })
             )}
           </section>
 
@@ -393,15 +415,27 @@ export default function Summary() {
               groupedByWeek.map(({ weekStart, entries }) => (
                 <div key={weekStart} className={styles.weekGroup}>
                   <p className={styles.weekLabel}>Week of {formatWeekOf(weekStart)}</p>
-                  {entries.map((entry) => (
-                    <div key={entry.id} className={styles.noteEntry}>
-                      <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
-                      <div className={styles.noteBody}>
-                        <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
-                        <p className={styles.noteText}>{entry.text || '—'}</p>
+                  {entries.map((entry) => {
+                    const isExpanded = expandedNotes.has(entry.id)
+                    const isLong = (entry.text || '').length > 80
+                    return (
+                      <div
+                        key={entry.id}
+                        className={styles.noteEntry}
+                        onClick={() => isLong && toggleNoteExpand(entry.id)}
+                        style={isLong ? { cursor: 'pointer' } : undefined}
+                      >
+                        <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
+                        <div className={styles.noteBody}>
+                          <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
+                          <p className={isExpanded ? styles.noteTextExpanded : styles.noteText}>{entry.text || '—'}</p>
+                          {isLong && (
+                            <span className={styles.noteToggle}>{isExpanded ? 'show less ↑' : 'show more ↓'}</span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ))
             )}
