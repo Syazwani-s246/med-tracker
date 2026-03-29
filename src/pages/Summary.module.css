@@ -283,3 +283,91 @@
   text-align: center;
   font-family: 'Nunito', sans-serif;
 }
+
+/* View toggle */
+.viewToggle {
+  display: flex;
+  gap: 8px;
+  background: #1a1528;
+  border-radius: 14px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #6b6480;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.toggleBtnActive {
+  background: #261f3b;
+  color: #ede9fe;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Monthly consistency card */
+.consistencyCard {
+  background: #1e1a2e;
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: slideUp 0.25s ease both;
+}
+
+.consistencyName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ede9fe;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+}
+
+.consistencyDetail {
+  font-size: 13px;
+  color: #9b8fc0;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+}
+
+.consistencyBar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.consistencyFill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* Monthly overuse card */
+.overuseCard {
+  background: rgba(251, 191, 36, 0.06);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  animation: slideUp 0.25s ease both;
+}
+
+.overuseCardMsg {
+  font-size: 14px;
+  color: #fbbf24;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  line-height: 1.55;
+}

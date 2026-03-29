@@ -1,4 +1,4 @@
-import { getMergedMedications, getCourses, addCourse } from './medicationStore'
+import { getMergedMedications, getCourses, addCourse, getRawMedStore, importRawMedStore } from './medicationStore'
 
 const STORAGE_KEY = 'amikubat_logs'
 const DISCLAIMER_KEY = 'amikubat_disclaimer_seen'
@@ -119,7 +119,8 @@ export function exportJSON() {
     const courses = getCourses(med.name)
     if (courses.length > 0) medication_courses[med.name] = courses
   }
-  const payload = { logs, medication_courses }
+  const amikubat_custom_meds = getRawMedStore()
+  const payload = { logs, medication_courses, amikubat_custom_meds }
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
   downloadBlob(blob, 'amikubat-export.json')
 }
@@ -147,9 +148,26 @@ export function exportCSV() {
     }
   }
 
+  // Custom medications section
+  const rawMeds = getRawMedStore()
+  const customMedRows = []
+  for (const [name, data] of Object.entries(rawMeds)) {
+    if (!data.deleted) {
+      customMedRows.push([
+        q(name),
+        q(data.interval != null ? String(data.interval) : ''),
+        q((data.ingredients || []).join('; ')),
+        q(data.prescribed ? 'yes' : 'no'),
+      ].join(','))
+    }
+  }
+
   let csv = [header, ...rows].join('\n')
   if (courseRows.length > 0) {
     csv += '\n\n--- Medication Courses ---\nMedication,Dose,Start Date,End Date,Notes\n' + courseRows.join('\n')
+  }
+  if (customMedRows.length > 0) {
+    csv += '\n\n--- Custom Medications ---\nName,Safety Interval (hrs),Ingredients,Prescribed\n' + customMedRows.join('\n')
   }
   const blob = new Blob([csv], { type: 'text/csv' })
   downloadBlob(blob, 'amikubat-export.csv')
@@ -218,6 +236,11 @@ export function importJSON(jsonString) {
         }
       }
     }
+  }
+
+  // Restore custom medications if present
+  if (parsed.amikubat_custom_meds) {
+    importRawMedStore(parsed.amikubat_custom_meds)
   }
 
   return added

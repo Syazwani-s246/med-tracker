@@ -11,16 +11,11 @@ export const MEDICATIONS = [
   { name: 'Polaramine', ingredients: ['dexchlorpheniramine'], interval: 6 },
   { name: 'Clarinase', ingredients: ['loratadine', 'pseudoephedrine'], interval: 6 },
   { name: 'Loratadine', ingredients: ['loratadine'], interval: 6 },
-  { name: 'Propranolol', ingredients: ['propranolol'], interval: null },
-  { name: 'Sertraline', ingredients: ['sertraline'], interval: null },
-  { name: 'Omeprazole', ingredients: ['omeprazole'], interval: null },
-  { name: 'Metformin', ingredients: ['metformin'], interval: null },
   { name: 'Cetirizine', ingredients: ['cetirizine'], interval: 6 },
   { name: 'Bromhexine HCl', ingredients: ['bromhexine'], interval: null },
   { name: 'Voltaren', ingredients: ['diclofenac'], interval: 8 },
   { name: 'Buscopan', ingredients: ['hyoscine butylbromide'], interval: 8 },
   { name: 'Nexium', ingredients: ['esomeprazole'], interval: 0 },
-  { name: 'Atorvastatin', ingredients: ['atorvastatin'], interval: 0 },
 ]
 
 export const MED_NAMES = MEDICATIONS.map((m) => m.name)

@@ -189,3 +189,20 @@ export function deleteCourse(medName, courseId) {
   stored[medName] = { ...med, courses }
   saveStoredMeds(stored)
 }
+
+// Export the raw stored meds object (custom meds + overrides)
+export function getRawMedStore() {
+  return getStoredMeds()
+}
+
+// Merge incoming med store data without overwriting existing entries
+export function importRawMedStore(incoming) {
+  if (!incoming || typeof incoming !== 'object') return
+  const stored = getStoredMeds()
+  for (const [name, data] of Object.entries(incoming)) {
+    if (!stored[name]) {
+      stored[name] = data
+    }
+  }
+  saveStoredMeds(stored)
+}

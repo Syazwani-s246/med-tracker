@@ -31,6 +31,7 @@ function getWeekStart(ts) {
 
 export default function Summary() {
   const [toast, setToast] = useState(null)
+  const [view, setView] = useState('week')
   const fileRef = useRef(null)
 
   const weekLogs = getLogsSince(7)
@@ -58,7 +59,7 @@ export default function Summary() {
   }, {})
   const topSymptom = Object.entries(symptomCounts).sort((a, b) => b[1] - a[1])[0] || null
 
-  // --- Section 2: Medication Consistency (last 30 days) ---
+  // --- Section 2: Medication Consistency (weekly, only meds taken at least once) ---
   const medLogsMonth = monthLogs.filter((l) => l.type !== 'note' && l.type !== 'symptom')
   const medNamesMonth = new Set(medLogsMonth.map((l) => l.name))
 
@@ -67,24 +68,26 @@ export default function Summary() {
     return getActiveCourse(m.name) !== null
   })
 
-  const medConsistencyData = relevantMeds.map((med) => {
-    const prescribed = getPrescribed(med.name)
-    const logs7 = medLogsWeek.filter((l) => l.name === med.name)
-    const count7 = logs7.length
-    const uniqueDays7 = new Set(logs7.map((l) => new Date(l.timestamp).toDateString())).size
-    const isOveruse = !prescribed && count7 > 5
+  const medConsistencyData = relevantMeds
+    .map((med) => {
+      const prescribed = getPrescribed(med.name)
+      const logs7 = medLogsWeek.filter((l) => l.name === med.name)
+      const count7 = logs7.length
+      const uniqueDays7 = new Set(logs7.map((l) => new Date(l.timestamp).toDateString())).size
+      const isOveruse = !prescribed && count7 > 5
 
-    let message
-    if (prescribed) {
-      message = uniqueDays7 >= 5
-        ? `${med.name} — taken consistently 👍`
-        : `${med.name} — a few missed days this week`
-    } else {
-      message = `${med.name} — taken ${count7} time${count7 !== 1 ? 's' : ''} this week`
-    }
+      let message
+      if (prescribed) {
+        message = uniqueDays7 >= 5
+          ? `${med.name} — taken consistently 👍`
+          : `${med.name} — a few missed days this week`
+      } else {
+        message = `${med.name} — taken ${count7} time${count7 !== 1 ? 's' : ''} this week`
+      }
 
-    return { med, prescribed, count7, isOveruse, message }
-  })
+      return { med, prescribed, count7, isOveruse, message }
+    })
+    .filter((d) => d.count7 > 0)
 
   // --- Section 3: Effect Rates ---
   const allMedLogs = allLogs.filter((l) => l.type !== 'note' && l.type !== 'symptom')
@@ -127,6 +130,45 @@ export default function Summary() {
     .map((med) => ({ name: med.name, courses: getCourses(med.name) }))
     .filter((m) => m.courses.length > 0)
 
+  // --- Monthly view data ---
+
+  // 1. Top symptom this month by unique days
+  const symptomDayMap = {}
+  for (const l of monthLogs.filter((l) => l.type === 'symptom')) {
+    const text = (l.text || '').toLowerCase().trim()
+    if (!text || text === 'other') continue
+    const day = new Date(l.timestamp).toDateString()
+    if (!symptomDayMap[text]) symptomDayMap[text] = new Set()
+    symptomDayMap[text].add(day)
+  }
+  const topSymptomMonth = Object.entries(symptomDayMap)
+    .map(([symptom, days]) => [symptom, days.size])
+    .sort((a, b) => b[1] - a[1])[0] || null
+
+  // 2. Per-medication total + avg frequency
+  const monthlyMedStats = []
+  for (const name of [...medNamesMonth]) {
+    const logs = medLogsMonth.filter((l) => l.name === name)
+    const count = logs.length
+    const avgEvery = count > 1 ? Math.round(30 / count) : null
+    monthlyMedStats.push({ name, count, avgEvery })
+  }
+  monthlyMedStats.sort((a, b) => b.count - a.count)
+
+  // 3. Consistency tracker for meds taken 15+ times
+  const consistencyMeds = monthlyMedStats
+    .filter((s) => s.count >= 15)
+    .map((s) => {
+      const uniqueDays = new Set(
+        medLogsMonth.filter((l) => l.name === s.name).map((l) => new Date(l.timestamp).toDateString())
+      ).size
+      const pct = Math.round((uniqueDays / 30) * 100)
+      return { name: s.name, count: s.count, uniqueDays, pct }
+    })
+
+  // 4. Overuse flag: any single med taken more than 15 times this month
+  const overuseFlagged = monthlyMedStats.filter((s) => s.count > 15)
+
   function handleImport(e) {
     const file = e.target.files[0]
     if (!file) return
@@ -149,99 +191,219 @@ export default function Summary() {
         <h1 className={styles.title}>Summary</h1>
       </header>
 
-      {/* Section 1: This Week at a Glance */}
-      <section className={styles.section}>
-        <p className={styles.sectionLabel}>This week</p>
-        <div className={styles.glanceCard}>
-          <p className={styles.glanceMsg}>{medFreeMsg}</p>
-          <div className={styles.glanceMeta}>
-            <span>{totalEntriesWeek} {totalEntriesWeek === 1 ? 'entry' : 'entries'} logged</span>
-            {topSymptom && (
-              <span> · {topSymptom[0]} appeared {topSymptom[1]} time{topSymptom[1] !== 1 ? 's' : ''}</span>
-            )}
-          </div>
-        </div>
-      </section>
+      {/* View toggle */}
+      <div className={styles.viewToggle}>
+        <button
+          className={`${styles.toggleBtn} ${view === 'week' ? styles.toggleBtnActive : ''}`}
+          onClick={() => setView('week')}
+        >
+          This Week
+        </button>
+        <button
+          className={`${styles.toggleBtn} ${view === 'month' ? styles.toggleBtnActive : ''}`}
+          onClick={() => setView('month')}
+        >
+          This Month
+        </button>
+      </div>
 
-      {/* Section 2: Medication Consistency */}
-      {medConsistencyData.length > 0 && (
-        <section className={styles.section}>
-          <p className={styles.sectionLabel}>Your medications</p>
-          <div className={styles.cardList}>
-            {medConsistencyData.map(({ med, message, isOveruse }) => (
-              <div key={med.name} className={styles.medCard}>
-                <p className={styles.medCardMsg}>{message}</p>
-                {isOveruse && (
-                  <p className={styles.overuseNudge}>
-                    Taken more than 5 times this week. If the pain persists, it might be worth speaking to a doctor. 💛
-                  </p>
+      {view === 'week' && (
+        <>
+          {/* Section 1: This Week at a Glance */}
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>This week</p>
+            <div className={styles.glanceCard}>
+              <p className={styles.glanceMsg}>{medFreeMsg}</p>
+              <div className={styles.glanceMeta}>
+                <span>{totalEntriesWeek} {totalEntriesWeek === 1 ? 'entry' : 'entries'} logged</span>
+                {topSymptom && (
+                  <span> · {topSymptom[0]} appeared {topSymptom[1]} time{topSymptom[1] !== 1 ? 's' : ''}</span>
                 )}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Section 3: Effect Rates */}
-      {effectData.length > 0 && (
-        <section className={styles.section}>
-          <p className={styles.sectionLabel}>How well they worked</p>
-          <div className={styles.cardList}>
-            {effectData.map(({ name, helpedPct, somewhatPct, nonePct }) => (
-              <div key={name} className={styles.effectCard}>
-                <p className={styles.effectName}>{name}</p>
-                <p className={styles.effectDesc}>
-                  {helpedPct >= 70
-                    ? `helped you ${helpedPct}% of the time`
-                    : `mixed results · helped ${helpedPct}%${somewhatPct > 0 ? `, somewhat ${somewhatPct}%` : ''}${nonePct > 0 ? `, didn't help ${nonePct}%` : ''}`}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Section 4: Notes & Symptoms This Month */}
-      <section className={styles.section}>
-        <p className={styles.sectionLabel}>Notes & symptoms this month</p>
-        {groupedByWeek.length === 0 ? (
-          <p className={styles.emptyNote}>No notes or symptoms logged this month</p>
-        ) : (
-          groupedByWeek.map(({ weekStart, entries }) => (
-            <div key={weekStart} className={styles.weekGroup}>
-              <p className={styles.weekLabel}>Week of {formatWeekOf(weekStart)}</p>
-              {entries.map((entry) => (
-                <div key={entry.id} className={styles.noteEntry}>
-                  <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
-                  <div className={styles.noteBody}>
-                    <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
-                    <p className={styles.noteText}>{entry.text || '—'}</p>
-                  </div>
-                </div>
-              ))}
             </div>
-          ))
-        )}
-      </section>
+          </section>
 
-      {/* Section 5: Medication History */}
-      {medsWithHistory.length > 0 && (
-        <section className={styles.section}>
-          <p className={styles.sectionLabel}>Medication history</p>
-          <div className={styles.cardList}>
-            {medsWithHistory.map(({ name, courses }) => (
-              <div key={name} className={styles.historyCard}>
-                <p className={styles.historyMedName}>{name}</p>
-                {courses.map((c) => (
-                  <p key={c.id} className={styles.historyCourseRow}>
-                    {c.dose ? `${c.dose} · ` : ''}{formatDate(c.startDate)} – {formatDate(c.endDate)}
-                    {c.notes ? ` · ${c.notes}` : ''}
-                  </p>
+          {/* Section 2: Medication Consistency */}
+          {medConsistencyData.length > 0 && (
+            <section className={styles.section}>
+              <p className={styles.sectionLabel}>Your medications</p>
+              <div className={styles.cardList}>
+                {medConsistencyData.map(({ med, message, isOveruse }) => (
+                  <div key={med.name} className={styles.medCard}>
+                    <p className={styles.medCardMsg}>{message}</p>
+                    {isOveruse && (
+                      <p className={styles.overuseNudge}>
+                        Taken more than 5 times this week. If the pain persists, it might be worth speaking to a doctor. 💛
+                      </p>
+                    )}
+                  </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+
+          {/* Section 3: Effect Rates */}
+          {effectData.length > 0 && (
+            <section className={styles.section}>
+              <p className={styles.sectionLabel}>How well they worked</p>
+              <div className={styles.cardList}>
+                {effectData.map(({ name, helpedPct, somewhatPct, nonePct }) => (
+                  <div key={name} className={styles.effectCard}>
+                    <p className={styles.effectName}>{name}</p>
+                    <p className={styles.effectDesc}>
+                      {helpedPct >= 70
+                        ? `helped you ${helpedPct}% of the time`
+                        : `mixed results · helped ${helpedPct}%${somewhatPct > 0 ? `, somewhat ${somewhatPct}%` : ''}${nonePct > 0 ? `, didn't help ${nonePct}%` : ''}`}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Section 4: Notes & Symptoms This Month */}
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>Notes & symptoms this month</p>
+            {groupedByWeek.length === 0 ? (
+              <p className={styles.emptyNote}>No notes or symptoms logged this month</p>
+            ) : (
+              groupedByWeek.map(({ weekStart, entries }) => (
+                <div key={weekStart} className={styles.weekGroup}>
+                  <p className={styles.weekLabel}>Week of {formatWeekOf(weekStart)}</p>
+                  {entries.map((entry) => (
+                    <div key={entry.id} className={styles.noteEntry}>
+                      <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
+                      <div className={styles.noteBody}>
+                        <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
+                        <p className={styles.noteText}>{entry.text || '—'}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
+          </section>
+
+          {/* Section 5: Medication History */}
+          {medsWithHistory.length > 0 && (
+            <section className={styles.section}>
+              <p className={styles.sectionLabel}>Medication history</p>
+              <div className={styles.cardList}>
+                {medsWithHistory.map(({ name, courses }) => (
+                  <div key={name} className={styles.historyCard}>
+                    <p className={styles.historyMedName}>{name}</p>
+                    {courses.map((c) => (
+                      <p key={c.id} className={styles.historyCourseRow}>
+                        {c.dose ? `${c.dose} · ` : ''}{formatDate(c.startDate)} – {formatDate(c.endDate)}
+                        {c.notes ? ` · ${c.notes}` : ''}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
+      )}
+
+      {view === 'month' && (
+        <>
+          {/* Monthly Section 1: Top symptom */}
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>Most common symptom</p>
+            {topSymptomMonth ? (
+              <div className={styles.glanceCard}>
+                <p className={styles.glanceMsg}>
+                  {topSymptomMonth[0].charAt(0).toUpperCase() + topSymptomMonth[0].slice(1)} appeared on {topSymptomMonth[1]} day{topSymptomMonth[1] !== 1 ? 's' : ''} this month
+                </p>
+                <p className={styles.glanceMeta}>
+                  {topSymptomMonth[1] >= 15
+                    ? "That's been quite frequent — consider mentioning it to your doctor. 💛"
+                    : topSymptomMonth[1] >= 7
+                    ? "A recurring theme this month. Take care of yourself. 🌿"
+                    : "A few days here and there — hope you're feeling better. 🌟"}
+                </p>
+              </div>
+            ) : (
+              <p className={styles.emptyNote}>No symptoms logged this month</p>
+            )}
+          </section>
+
+          {/* Monthly Section 2: Per-medication stats */}
+          {monthlyMedStats.length > 0 && (
+            <section className={styles.section}>
+              <p className={styles.sectionLabel}>Medications this month</p>
+              <div className={styles.cardList}>
+                {monthlyMedStats.map(({ name, count, avgEvery }) => (
+                  <div key={name} className={styles.medCard}>
+                    <p className={styles.medCardMsg}>
+                      {name} — {count} time{count !== 1 ? 's' : ''}
+                      {avgEvery ? `, every ~${avgEvery} day${avgEvery !== 1 ? 's' : ''}` : ''}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Monthly Section 3: Consistency tracker */}
+          {consistencyMeds.length > 0 && (
+            <section className={styles.section}>
+              <p className={styles.sectionLabel}>Consistency</p>
+              <div className={styles.cardList}>
+                {consistencyMeds.map(({ name, uniqueDays, pct }) => (
+                  <div key={name} className={styles.consistencyCard}>
+                    <p className={styles.consistencyName}>{name}</p>
+                    <p className={styles.consistencyDetail}>
+                      taken {uniqueDays} out of 30 days — {pct}%
+                    </p>
+                    <div className={styles.consistencyBar}>
+                      <div className={styles.consistencyFill} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Monthly Section 4: Overuse flag */}
+          {overuseFlagged.length > 0 && (
+            <section className={styles.section}>
+              <div className={styles.cardList}>
+                {overuseFlagged.map(({ name, count }) => (
+                  <div key={name} className={styles.overuseCard}>
+                    <p className={styles.overuseCardMsg}>
+                      You took {name} {count} times this month. If you're relying on it often, it might be worth discussing with your doctor. 💛
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Monthly Section 5: Notes & Symptoms grouped by week */}
+          <section className={styles.section}>
+            <p className={styles.sectionLabel}>Notes & symptoms this month</p>
+            {groupedByWeek.length === 0 ? (
+              <p className={styles.emptyNote}>No notes or symptoms logged this month</p>
+            ) : (
+              groupedByWeek.map(({ weekStart, entries }) => (
+                <div key={weekStart} className={styles.weekGroup}>
+                  <p className={styles.weekLabel}>Week of {formatWeekOf(weekStart)}</p>
+                  {entries.map((entry) => (
+                    <div key={entry.id} className={styles.noteEntry}>
+                      <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
+                      <div className={styles.noteBody}>
+                        <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
+                        <p className={styles.noteText}>{entry.text || '—'}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
+          </section>
+        </>
       )}
 
       {/* Data Export */}

@@ -253,23 +253,6 @@ export default function Settings() {
         <h1 className={styles.title}>Settings</h1>
       </header>
 
-      {/* Default medications */}
-      <section className={styles.section}>
-        <p className={styles.sectionLabel}>Default Medications</p>
-        <div className={styles.list}>
-          {defaultMeds.map((med) => (
-            <button
-              key={med.name}
-              className={styles.medRow}
-              onClick={() => openEdit(med)}
-            >
-              <span className={styles.medName}>{med.name}</span>
-              <span className={styles.medInterval}>{formatInterval(med.interval)}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
       {/* Custom medications */}
       <section className={styles.section}>
         <p className={styles.sectionLabel}>My Medications</p>
