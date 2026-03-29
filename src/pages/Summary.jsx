@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { getLogs, getLogsSince, exportJSON, exportCSV, importJSON } from '../db'
 import { getMergedMedications, getCourses, getActiveCourse, getPrescribed, isWithinAnyCourse } from '../medicationStore'
 import Toast from '../components/Toast'
@@ -33,6 +33,10 @@ export default function Summary() {
   const [toast, setToast] = useState(null)
   const [view, setView] = useState('week')
   const fileRef = useRef(null)
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [view])
 
   const weekLogs = getLogsSince(7)
   const monthLogs = getLogsSince(30)
@@ -108,7 +112,11 @@ export default function Summary() {
     effectData.push({ name: med.name, helpedPct, somewhatPct, nonePct })
   }
 
-  // --- Section 4: Notes & Symptoms This Month ---
+  // --- Section 4: Notes & Symptoms ---
+  const weekNotesAndSymptoms = weekLogs
+    .filter((l) => l.type === 'note' || l.type === 'symptom')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+
   const notesAndSymptoms = monthLogs
     .filter((l) => l.type === 'note' || l.type === 'symptom')
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
@@ -166,8 +174,8 @@ export default function Summary() {
       return { name: s.name, count: s.count, uniqueDays, pct }
     })
 
-  // 4. Overuse flag: any single med taken more than 15 times this month
-  const overuseFlagged = monthlyMedStats.filter((s) => s.count > 15)
+  // 4. Overuse flag: any non-prescribed med taken more than 15 times this month
+  const overuseFlagged = monthlyMedStats.filter((s) => s.count > 15 && !getPrescribed(s.name))
 
   function handleImport(e) {
     const file = e.target.files[0]
@@ -261,24 +269,19 @@ export default function Summary() {
             </section>
           )}
 
-          {/* Section 4: Notes & Symptoms This Month */}
+          {/* Section 4: Notes & Symptoms This Week */}
           <section className={styles.section}>
-            <p className={styles.sectionLabel}>Notes & symptoms this month</p>
-            {groupedByWeek.length === 0 ? (
-              <p className={styles.emptyNote}>No notes or symptoms logged this month</p>
+            <p className={styles.sectionLabel}>Notes & symptoms this week</p>
+            {weekNotesAndSymptoms.length === 0 ? (
+              <p className={styles.emptyNote}>No notes or symptoms logged this week</p>
             ) : (
-              groupedByWeek.map(({ weekStart, entries }) => (
-                <div key={weekStart} className={styles.weekGroup}>
-                  <p className={styles.weekLabel}>Week of {formatWeekOf(weekStart)}</p>
-                  {entries.map((entry) => (
-                    <div key={entry.id} className={styles.noteEntry}>
-                      <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
-                      <div className={styles.noteBody}>
-                        <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
-                        <p className={styles.noteText}>{entry.text || '—'}</p>
-                      </div>
-                    </div>
-                  ))}
+              weekNotesAndSymptoms.map((entry) => (
+                <div key={entry.id} className={styles.noteEntry}>
+                  <span className={styles.noteTypeIcon}>{entry.type === 'symptom' ? '🩺' : '📝'}</span>
+                  <div className={styles.noteBody}>
+                    <p className={styles.noteDate}>{formatTimestamp(entry.timestamp)}</p>
+                    <p className={styles.noteText}>{entry.text || '—'}</p>
+                  </div>
                 </div>
               ))
             )}

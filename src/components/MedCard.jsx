@@ -1,4 +1,5 @@
 import { RiCheckLine, RiSubtractLine, RiCloseLine, RiTimeLine, RiCapsuleLine } from 'react-icons/ri'
+import { FiAlertCircle } from 'react-icons/fi'
 import styles from './MedCard.module.css'
 
 const EFFECT_CONFIG = {
@@ -37,7 +38,10 @@ export default function MedCard({ log, onEdit, onDelete }) {
           </span>
         </div>
         {log.reason && (
-          <span className={styles.reasonTag}>{log.reason}</span>
+          <div className={styles.reasonRow}>
+            <FiAlertCircle className={styles.reasonIcon} />
+            <span className={styles.reasonText}>{log.reason}</span>
+          </div>
         )}
       </div>
       <div className={styles.right}>
