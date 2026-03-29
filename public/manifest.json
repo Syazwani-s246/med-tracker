@@ -1,9 +1,9 @@
 {
   "id": "/",
-  "name": "AmikUbat — Medication Tracker",
+  "name": "AmikUbat – Tracker Ubat Harian",
   "short_name": "AmikUbat",
-  "description": "A free, private medication tracker. Log your meds, track dosage intervals, get weekly insights, and export your history — no login, no cloud, works offline.",
-  "lang": "en-MY",
+  "description": "Tracker ubat harian percuma. Offline, tiada login, selamat.",
+  "lang": "ms",
   "categories": ["health", "medical", "utilities"],
   "display": "standalone",
   "start_url": "/",
